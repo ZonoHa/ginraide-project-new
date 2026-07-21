@@ -2,16 +2,11 @@
   "version": 2,
   "buildCommand": "cd frontend && npm install && npm run build && cd ../backend && npm install && npx prisma generate",
   "outputDirectory": "frontend/dist",
-  "builds": [
-    {
-      "src": "backend/src/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build"
+  "functions": {
+    "backend/src/server.js": {
+      "memory": 1024
     }
-  ],
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -19,7 +14,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/frontend/dist/index.html"
+      "destination": "/index.html"
     }
   ]
 }
