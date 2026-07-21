@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username         String   @unique
+  password         String
+  role             String   @default("USER") // USER, ADMIN
+  bio              String?
+  profileImageUrl  String?
+  commentBanUntil  DateTime?
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  price       Float
+  category    String   
+  imageUrl    String?
+  recipes     RecipeIngredient[]
+  createdAt   DateTime @default(now())
+}
+
+model ComboRecipe {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  totalPrice  Float
+  imageUrl    String?
+  isOfficial  Boolean  @default(false)
+  ingredients RecipeIngredient[]
+  posts       Post[]
+  createdAt   DateTime @default(now())
+}
+
+model RecipeIngredient {
+  id          Int         @id @default(autoincrement())
+  comboId     Int
+  productId   Int
+  combo       ComboRecipe @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String?
+  authorId    Int
+  comboId     Int?
+  imageUrl    String?
+  commentsEnabled Boolean @default(true)
+  likesCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  combo       ComboRecipe? @relation(fields: [comboId], references: [id], onDelete: SetNull)
+  comments    Comment[]
+  likes       Like[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  postId    Int
+  authorId  Int
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-wongnai-orange: #FF8A00;
+  --color-wongnai-dark: #111111;
+  --color-wongnai-light: #F8F9FA;
+  --font-sans: "Noto Sans Thai", "Prompt", sans-serif;
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm dark:bg-gray-900/80 dark:border-gray-800/50;
+  }
+}
+
+body {
+  @apply bg-[#F8F9FA] text-[#111111] dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300;
+}
