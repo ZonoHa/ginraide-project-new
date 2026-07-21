@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "cd frontend && npm install --no-package-lock && npm run build && cd ../backend && npm install --no-package-lock && npx prisma generate",
   "outputDirectory": "frontend/dist",
   "functions": {
     "backend/src/server.js": {
