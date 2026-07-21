@@ -1,12 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && npm install --no-package-lock && npm run build && cd ../backend && npm install --no-package-lock && npx prisma generate",
-  "outputDirectory": "frontend/dist",
-  "functions": {
-    "backend/src/server.js": {
-      "memory": 1024
+  "builds": [
+    {
+      "src": "backend/src/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build"
     }
-  },
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -14,7 +17,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/frontend/dist/index.html"
     }
   ]
 }
