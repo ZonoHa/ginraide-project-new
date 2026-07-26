@@ -57,9 +57,19 @@ function ComboSearch() {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="relative text-center space-y-6 py-12 lg:py-20 mb-4">
+      <div className="relative text-center space-y-6 py-12 lg:py-20 mb-4 z-0">
         {/* Ambient Gradient Orbs */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] max-w-4xl h-[350px] bg-gradient-to-r from-orange-400/30 via-pink-500/20 to-purple-500/30 blur-[100px] -z-10 rounded-full pointer-events-none dark:from-orange-500/20 dark:via-pink-500/10 dark:to-purple-500/20"></div>
+        
+        {/* Floating Food Emojis (Moved from App.jsx) */}
+        <div className="hidden lg:block pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute top-[10%] left-[-5%] animate-float glass-emoji w-24 h-24 text-6xl shadow-orange-500/10">🍜</div>
+          <div className="absolute top-[30%] right-[-5%] animate-float-delayed glass-emoji w-20 h-20 text-5xl shadow-purple-500/10">🥤</div>
+          <div className="absolute top-[80%] left-[-2%] animate-float-reverse glass-emoji w-20 h-20 text-5xl shadow-yellow-500/10">🍟</div>
+          <div className="absolute top-[15%] right-[10%] animate-float glass-emoji w-16 h-16 text-4xl shadow-blue-500/10">🍙</div>
+          <div className="absolute top-[90%] right-[5%] animate-float-delayed glass-emoji w-24 h-24 text-6xl shadow-red-500/10">🍔</div>
+          <div className="absolute top-[60%] left-[10%] animate-float-reverse glass-emoji w-16 h-16 text-4xl shadow-green-500/10">🍕</div>
+        </div>
         
         {/* Floating Badges */}
         <div className="absolute top-4 left-[10%] hidden md:block animate-float-delayed z-0">

@@ -10,16 +10,8 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col doodle-bg relative overflow-hidden">
-        {/* Floating Background Elements */}
-        <div className="hidden lg:block pointer-events-none absolute inset-0 z-0 overflow-hidden min-h-[800px]">
-          <div className="absolute top-[15%] left-[5%] animate-float glass-emoji w-24 h-24 text-6xl shadow-orange-500/10">🍜</div>
-          <div className="absolute top-[45%] right-[5%] animate-float-delayed glass-emoji w-20 h-20 text-5xl shadow-purple-500/10">🥤</div>
-          <div className="absolute top-[65%] left-[8%] animate-float-reverse glass-emoji w-20 h-20 text-5xl shadow-yellow-500/10">🍟</div>
-          <div className="absolute top-[20%] right-[10%] animate-float glass-emoji w-16 h-16 text-4xl shadow-blue-500/10">🍙</div>
-          <div className="absolute top-[75%] right-[12%] animate-float-delayed glass-emoji w-24 h-24 text-6xl shadow-red-500/10">🍔</div>
-          <div className="absolute top-[35%] left-[12%] animate-float-reverse glass-emoji w-16 h-16 text-4xl shadow-green-500/10">🍕</div>
-        </div>
-
+        {/* Floating Background Elements Removed (Moved to Hero Section) */}
+        
         <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
           <main className="flex-grow max-w-7xl mx-auto w-full p-4 md:p-6 lg:p-8">
