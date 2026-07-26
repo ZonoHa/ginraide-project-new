@@ -1,0 +1,13 @@
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+node/
+node22/
+.env
+backend/.env
+frontend/.env
+dist/
+build/
+backend/prisma/*.db
+backend/prisma/*.db-journal
+.DS_Store

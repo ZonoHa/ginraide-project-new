@@ -56,101 +56,119 @@ function ComboSearch() {
 
   return (
     <div className="space-y-8">
-      {/* Search Header */}
-      <div className="text-center space-y-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-          ค้นหา <span className="text-wongnai-orange">คอมโบอาหาร</span> ที่ใช่สำหรับคุณ
+      {/* Hero Section */}
+      <div className="relative text-center space-y-6 py-12 lg:py-20 mb-4">
+        {/* Ambient Gradient Orbs */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] max-w-4xl h-[350px] bg-gradient-to-r from-orange-400/30 via-pink-500/20 to-purple-500/30 blur-[100px] -z-10 rounded-full pointer-events-none dark:from-orange-500/20 dark:via-pink-500/10 dark:to-purple-500/20"></div>
+        
+        {/* Floating Badges */}
+        <div className="absolute top-4 left-[10%] hidden md:block animate-float-delayed z-0">
+           <span className="glass px-5 py-2.5 rounded-full text-sm font-bold text-wongnai-orange shadow-lg rotate-[-8deg] inline-block">🔥 เมนูฮิต</span>
+        </div>
+        <div className="absolute bottom-4 right-[10%] hidden md:block animate-float z-0">
+           <span className="glass px-5 py-2.5 rounded-full text-sm font-bold text-blue-500 shadow-lg rotate-[8deg] inline-block">💡 ไอเดียเพียบ</span>
+        </div>
+        <div className="absolute top-8 right-[20%] hidden lg:block animate-float-reverse z-0">
+           <span className="glass px-5 py-2.5 rounded-full text-sm font-bold text-green-500 shadow-lg rotate-[12deg] inline-block">💰 คุ้มสุดๆ</span>
+        </div>
+
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.1] relative z-10">
+          ค้นหา <span className="text-transparent bg-clip-text bg-gradient-to-r from-wongnai-orange to-red-500 drop-shadow-sm">คอมโบอาหาร</span><br/>ที่ใช่สำหรับคุณ
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium relative z-10 px-4">
           อิ่มอร่อยคุ้มค่าด้วยเมนูเด็ดจากร้านสะดวกซื้อ ไม่ว่าจะค้นหาจากงบประมาณ หรือวัตถุดิบที่คุณมีอยู่แล้ว
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex justify-center space-x-4">
-        <button 
-          onClick={() => setActiveTab('budget')}
-          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'budget' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105 glow-active' : 'bg-white text-gray-600 hover:bg-orange-50 hover:-translate-y-0.5'}`}
-        >
-          ค้นหาจากงบประมาณ
-        </button>
-        <button 
-          onClick={() => setActiveTab('ingredient')}
-          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'ingredient' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105 glow-active' : 'bg-white text-gray-600 hover:bg-orange-50 hover:-translate-y-0.5'}`}
-        >
-          ค้นหาจากวัตถุดิบที่มี
-        </button>
-      </div>
-
-      {/* Search Bar (Budget) */}
-      {activeTab === 'budget' && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-xl mx-auto flex space-x-2"
-        >
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span className="text-gray-500 font-medium">฿</span>
-            </div>
-            <input 
-              type="number" 
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              placeholder="งบประมาณของคุณ (เช่น 50)" 
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-wongnai-orange focus:ring-2 focus:ring-orange-200 transition-all outline-none text-lg"
-            />
-          </div>
+      {/* Search & Tabs Glass Container */}
+      <div className="max-w-4xl mx-auto glass p-6 md:p-8 rounded-3xl relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60 dark:border-gray-700/50">
+        
+        {/* Tabs */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
           <button 
-            onClick={handleBudgetSearch}
-            className="bg-gray-900 text-white px-6 rounded-xl hover:bg-gray-800 transition-colors flex items-center font-medium"
+            onClick={() => setActiveTab('budget')}
+            className={`px-6 py-3 rounded-full font-bold transition-all duration-300 shadow-sm ${activeTab === 'budget' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105 glow-active' : 'bg-white/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 hover:-translate-y-0.5 border border-gray-100 dark:border-gray-700'}`}
           >
-            <Search className="w-5 h-5 mr-2" />
-            ค้นหา
+            ค้นหาจากงบประมาณ
           </button>
-        </motion.div>
-      )}
+          <button 
+            onClick={() => setActiveTab('ingredient')}
+            className={`px-6 py-3 rounded-full font-bold transition-all duration-300 shadow-sm ${activeTab === 'ingredient' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105 glow-active' : 'bg-white/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 hover:-translate-y-0.5 border border-gray-100 dark:border-gray-700'}`}
+          >
+            ค้นหาจากวัตถุดิบที่มี
+          </button>
+        </div>
 
-      {/* Ingredient Selector */}
-      {activeTab === 'ingredient' && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-3xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors"
-        >
-          <h3 className="text-lg font-bold mb-4 dark:text-white">เลือกวัตถุดิบที่คุณมีอยู่แล้ว</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-            {products.map(product => (
-              <button
-                key={product.id}
-                onClick={() => toggleIngredient(product.id)}
-                className={`flex items-center p-3 rounded-xl border transition-all ${
-                  selectedIngredients.includes(product.id) 
-                  ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-gray-200'
-                }`}
-              >
-                {selectedIngredients.includes(product.id) ? (
-                  <CheckCircle2 className="w-5 h-5 mr-2 text-green-500" />
-                ) : (
-                  <Circle className="w-5 h-5 mr-2 text-gray-400" />
-                )}
-                <span className="text-sm font-medium">{product.name}</span>
-              </button>
-            ))}
-            {products.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full">กำลังโหลดวัตถุดิบ...</p>}
-          </div>
-          <div className="flex justify-center">
+        {/* Search Bar (Budget) */}
+        {activeTab === 'budget' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3"
+          >
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <span className="text-wongnai-orange font-bold text-xl">฿</span>
+              </div>
+              <input 
+                type="number" 
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                placeholder="งบประมาณของคุณ (เช่น 50)" 
+                className="w-full pl-10 pr-4 py-4 rounded-2xl bg-white/90 dark:bg-gray-900/90 border-2 border-transparent focus:border-wongnai-orange focus:ring-4 focus:ring-orange-500/20 transition-all outline-none text-xl font-bold text-gray-900 dark:text-white shadow-inner"
+              />
+            </div>
             <button 
-              onClick={handleIngredientSearch}
-              className="bg-gray-900 text-white px-8 py-3 rounded-xl hover:bg-gray-800 transition-colors flex items-center font-medium shadow-lg"
+              onClick={handleBudgetSearch}
+              className="bg-gray-900 dark:bg-wongnai-orange text-white px-8 py-4 rounded-2xl hover:bg-gray-800 dark:hover:bg-orange-600 transition-all duration-300 shadow-xl shadow-gray-900/20 dark:shadow-orange-500/30 flex items-center justify-center font-bold text-lg hover:-translate-y-1"
             >
-              <Search className="w-5 h-5 mr-2" />
-              ค้นหาเมนูคอมโบ
+              <Search className="w-6 h-6 mr-2" />
+              ค้นหา
             </button>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+
+        {/* Ingredient Selector */}
+        {activeTab === 'ingredient' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl mx-auto"
+          >
+            <h3 className="text-lg font-bold mb-4 text-center text-gray-800 dark:text-gray-200">เลือกวัตถุดิบที่คุณมีอยู่แล้ว</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+              {products.map(product => (
+                <button
+                  key={product.id}
+                  onClick={() => toggleIngredient(product.id)}
+                  className={`flex items-center p-3 rounded-xl border-2 transition-all duration-300 font-medium shadow-sm hover:-translate-y-1 ${
+                    selectedIngredients.includes(product.id) 
+                    ? 'border-wongnai-orange bg-orange-50 dark:bg-orange-900/40 text-wongnai-orange' 
+                    : 'border-white/50 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 hover:border-orange-200 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  {selectedIngredients.includes(product.id) ? (
+                    <CheckCircle2 className="w-5 h-5 mr-2 text-wongnai-orange flex-shrink-0" />
+                  ) : (
+                    <Circle className="w-5 h-5 mr-2 text-gray-400 flex-shrink-0" />
+                  )}
+                  <span className="text-sm">{product.name}</span>
+                </button>
+              ))}
+              {products.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
+            </div>
+            <div className="flex justify-center">
+              <button 
+                onClick={handleIngredientSearch}
+                className="bg-gray-900 dark:bg-wongnai-orange text-white px-10 py-4 rounded-2xl hover:bg-gray-800 dark:hover:bg-orange-600 transition-all duration-300 shadow-xl shadow-gray-900/20 dark:shadow-orange-500/30 flex items-center font-bold text-lg hover:-translate-y-1"
+              >
+                <Search className="w-6 h-6 mr-2" />
+                ค้นหาเมนูคอมโบ
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </div>
 
       {/* Results Grid */}
       <div className="pt-8">

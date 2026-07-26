@@ -13,7 +13,7 @@ function App() {
         {/* Floating Background Elements */}
         <div className="hidden lg:block pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div className="absolute top-[15%] left-[5%] animate-float glass-emoji w-24 h-24 text-6xl shadow-orange-500/10">🍜</div>
-          <div className="absolute top-[45%] right-[5%] animate-float-delayed glass-emoji w-20 h-20 text-5xl shadow-purple-500/10">🧋</div>
+          <div className="absolute top-[45%] right-[5%] animate-float-delayed glass-emoji w-20 h-20 text-5xl shadow-purple-500/10">🥤</div>
           <div className="absolute bottom-[20%] left-[8%] animate-float-reverse glass-emoji w-20 h-20 text-5xl shadow-yellow-500/10">🍟</div>
           <div className="absolute top-[20%] right-[10%] animate-float glass-emoji w-16 h-16 text-4xl shadow-blue-500/10">🎮</div>
           <div className="absolute bottom-[30%] right-[12%] animate-float-delayed glass-emoji w-24 h-24 text-6xl shadow-red-500/10">🎧</div>
