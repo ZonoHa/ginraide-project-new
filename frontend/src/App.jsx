@@ -11,7 +11,7 @@ function App() {
     <Router>
       <div className="min-h-screen flex flex-col doodle-bg relative overflow-hidden">
         {/* Floating Background Elements */}
-        <div className="hidden lg:block pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="hidden lg:block pointer-events-none absolute inset-0 z-0 overflow-hidden min-h-screen">
           <div className="absolute top-[15%] left-[5%] animate-float glass-emoji w-24 h-24 text-6xl shadow-orange-500/10">🍜</div>
           <div className="absolute top-[45%] right-[5%] animate-float-delayed glass-emoji w-20 h-20 text-5xl shadow-purple-500/10">🥤</div>
           <div className="absolute bottom-[20%] left-[8%] animate-float-reverse glass-emoji w-20 h-20 text-5xl shadow-yellow-500/10">🍟</div>
