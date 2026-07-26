@@ -70,13 +70,13 @@ function ComboSearch() {
       <div className="flex justify-center space-x-4">
         <button 
           onClick={() => setActiveTab('budget')}
-          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'budget' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105' : 'bg-white text-gray-600 hover:bg-orange-50 hover:-translate-y-0.5'}`}
+          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'budget' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105 glow-active' : 'bg-white text-gray-600 hover:bg-orange-50 hover:-translate-y-0.5'}`}
         >
           ค้นหาจากงบประมาณ
         </button>
         <button 
           onClick={() => setActiveTab('ingredient')}
-          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'ingredient' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105' : 'bg-white text-gray-600 hover:bg-orange-50 hover:-translate-y-0.5'}`}
+          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'ingredient' ? 'bg-wongnai-orange text-white shadow-xl shadow-orange-500/40 -translate-y-1 scale-105 glow-active' : 'bg-white text-gray-600 hover:bg-orange-50 hover:-translate-y-0.5'}`}
         >
           ค้นหาจากวัตถุดิบที่มี
         </button>
@@ -175,10 +175,10 @@ function ComboSearch() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="group cursor-pointer"
+              className="group cursor-pointer relative"
               onClick={() => setSelectedCombo(combo)}
             >
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-2xl p-6 aspect-[4/5] flex flex-col items-center justify-center relative overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl p-6 aspect-[4/5] flex flex-col items-center justify-center relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
                 {/* Official Badge */}
                 {combo.isOfficial && (
                   <div className="absolute top-4 left-4 bg-white/80 backdrop-blur text-wongnai-orange text-xs font-bold px-2 py-1 rounded-md">
@@ -203,14 +203,17 @@ function ComboSearch() {
                 )}
                 
                 {/* Image */}
-                <img 
-                  src={combo.imageUrl} 
-                  alt={combo.name} 
-                  className="w-40 h-40 object-cover rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500 mb-6" 
-                />
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-wongnai-orange/20 blur-2xl rounded-full scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <img 
+                    src={combo.imageUrl} 
+                    alt={combo.name} 
+                    className="w-44 h-44 object-cover rounded-full shadow-2xl ring-4 ring-white/60 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative z-10" 
+                  />
+                </div>
                 
                 {/* Info */}
-                <div className="text-center w-full bg-white/90 backdrop-blur-sm absolute bottom-0 left-0 right-0 p-4 border-t border-white/50">
+                <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-5 border-t border-white/80 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] transition-transform duration-300">
                   <h3 className="font-bold text-gray-900 dark:text-gray-900 truncate">{combo.name}</h3>
                   <div className="flex items-center justify-center mt-1 space-x-1">
                     <span className={`font-bold ${
