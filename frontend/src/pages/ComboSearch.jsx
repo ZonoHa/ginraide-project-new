@@ -206,17 +206,17 @@ function ComboSearch() {
               className="group cursor-pointer relative"
               onClick={() => setSelectedCombo(combo)}
             >
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl p-6 aspect-[4/5] flex flex-col items-center justify-center relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-8 px-4 aspect-[4/5] flex flex-col items-center justify-start relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
                 {/* Official Badge */}
                 {combo.isOfficial && (
-                  <div className="absolute top-4 left-4 bg-white/80 backdrop-blur text-wongnai-orange text-xs font-bold px-2 py-1 rounded-md">
+                  <div className="absolute top-3 left-3 bg-white/80 backdrop-blur text-wongnai-orange text-xs font-bold px-2 py-1 rounded-md z-20">
                     OFFICIAL
                   </div>
                 )}
 
                 {/* Budget Diff Badge (only shown when searching by budget) */}
                 {activeTab === 'budget' && searchedBudget && (
-                  <div className={`absolute top-4 right-4 text-xs font-bold px-2 py-1 rounded-full ${
+                  <div className={`absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-full z-20 ${
                     combo.totalPrice <= searchedBudget
                       ? 'bg-green-500 text-white'
                       : combo.totalPrice <= searchedBudget * 1.15
@@ -231,17 +231,17 @@ function ComboSearch() {
                 )}
                 
                 {/* Image */}
-                <div className="relative mb-6">
+                <div className="relative mt-2 sm:mt-0">
                   <div className="absolute inset-0 bg-wongnai-orange/20 blur-2xl rounded-full scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <img 
                     src={combo.imageUrl} 
                     alt={combo.name} 
-                    className="w-44 h-44 object-cover rounded-full shadow-2xl ring-4 ring-white/60 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative z-10" 
+                    className="w-28 h-28 sm:w-32 sm:h-32 xl:w-36 xl:h-36 object-cover rounded-full shadow-2xl ring-4 ring-white/70 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative z-10" 
                   />
                 </div>
                 
                 {/* Info */}
-                <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-5 border-t border-white/80 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] transition-transform duration-300">
+                <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)] transition-transform duration-300">
                   <h3 className="font-bold text-gray-900 dark:text-gray-900 truncate">{combo.name}</h3>
                   <div className="flex items-center justify-center mt-1 space-x-1">
                     <span className={`font-bold ${
