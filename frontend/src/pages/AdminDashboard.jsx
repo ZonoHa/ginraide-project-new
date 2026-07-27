@@ -50,7 +50,7 @@ function ComboFormModal({ combo, onClose, onSave, products }) {
       const p = products.find(prod => prod.id === id);
       return acc + (p ? parseFloat(p.price) : 0);
     }, 0);
-    setForm(prev => ({ ...prev, totalPrice: sum || '' }));
+    setForm(prev => ({ ...prev, totalPrice: sum || 0 }));
   }, [form.productIds, products]);
 
   const toggle = (id) => {
