@@ -17,17 +17,17 @@ function ComboSearch() {
   useEffect(() => {
     fetch('/api/combos')
       .then(res => res.json())
-      .then(data => setCombos(data))
+      .then(data => { if (Array.isArray(data)) setCombos(data); })
       .catch(err => console.error(err));
 
     fetch('/api/fridge/menus')
       .then(res => res.json())
-      .then(data => setFridgeMenus(data))
+      .then(data => { if (Array.isArray(data)) setFridgeMenus(data); })
       .catch(err => console.error(err));
 
     fetch('/api/fridge/ingredients')
       .then(res => res.json())
-      .then(data => setFridgeIngredients(data))
+      .then(data => { if (Array.isArray(data)) setFridgeIngredients(data); })
       .catch(err => console.error(err));
   }, []);
 
@@ -46,7 +46,7 @@ function ComboSearch() {
       body: JSON.stringify({ userIngredients: selectedFridgeIngredients })
     })
       .then(res => res.json())
-      .then(data => setFridgeMenus(data))
+      .then(data => { if (Array.isArray(data)) setFridgeMenus(data); })
       .catch(err => console.error(err));
   };
 

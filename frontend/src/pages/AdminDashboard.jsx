@@ -330,13 +330,13 @@ function AdminDashboard() {
   
   const fetchAll = () => {
     fetch(`${API}/stats`).then(r => r.json()).then(setStats).catch(console.error);
-    fetch(`${API}/combos`).then(r => r.json()).then(setCombos).catch(console.error);
-    fetch(`${API}/products`).then(r => r.json()).then(setProducts).catch(console.error);
-    fetch(`${API}/fridge-menus`).then(r => r.json()).then(setFridgeMenus).catch(console.error);
-    fetch(`${API}/fridge-ingredients`).then(r => r.json()).then(setFridgeIngredients).catch(console.error);
-    fetch(`${API}/posts`).then(r => r.json()).then(setPosts).catch(console.error);
-    fetch(`${API}/comments`).then(r => r.json()).then(setComments).catch(console.error);
-    fetch(`${API}/users`).then(r => r.json()).then(setUsers).catch(console.error);
+    fetch(`${API}/combos`).then(r => r.json()).then(data => { if (Array.isArray(data)) setCombos(data); }).catch(console.error);
+    fetch(`${API}/products`).then(r => r.json()).then(data => { if (Array.isArray(data)) setProducts(data); }).catch(console.error);
+    fetch(`${API}/fridge-menus`).then(r => r.json()).then(data => { if (Array.isArray(data)) setFridgeMenus(data); }).catch(console.error);
+    fetch(`${API}/fridge-ingredients`).then(r => r.json()).then(data => { if (Array.isArray(data)) setFridgeIngredients(data); }).catch(console.error);
+    fetch(`${API}/posts`).then(r => r.json()).then(data => { if (Array.isArray(data)) setPosts(data); }).catch(console.error);
+    fetch(`${API}/comments`).then(r => r.json()).then(data => { if (Array.isArray(data)) setComments(data); }).catch(console.error);
+    fetch(`${API}/users`).then(r => r.json()).then(data => { if (Array.isArray(data)) setUsers(data); }).catch(console.error);
   };
 
   useEffect(() => { fetchAll(); }, []);
