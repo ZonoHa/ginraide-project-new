@@ -114,11 +114,15 @@ function ComboFormModal({ combo, onClose, onSave, products }) {
 }
 
 // ===================== PRODUCT FORM MODAL =====================
-function ProductFormModal({ product, onClose, onSave }) {
+function ProductFormModal({ product, products, onClose, onSave }) {
   const [form, setForm] = useState(product || { name: '', price: '', category: 'อาหาร', imageUrl: '' });
+
+  // Check if name already exists (only when adding new product)
+  const isDuplicate = !product && form.name.trim() !== '' && products?.some(p => p.name.trim().toLowerCase() === form.name.trim().toLowerCase());
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isDuplicate) return;
     const method = product ? 'PUT' : 'POST';
     const url = product ? `${API}/products/${product.id}` : `${API}/products`;
     fetch(url, {
@@ -134,8 +138,9 @@ function ProductFormModal({ product, onClose, onSave }) {
         <div>
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">ชื่อสินค้า *</label>
           <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+            className={`mt-1 w-full px-4 py-2.5 rounded-xl border ${isDuplicate ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-200 dark:border-gray-700 focus:ring-wongnai-orange/50'} bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 transition-all`}
             placeholder="เช่น ข้าวสวย" />
+          {isDuplicate && <p className="text-red-500 text-xs mt-1.5 font-bold">⚠️ มีวัตถุดิบชื่อนี้ในระบบแล้ว กรุณาใช้ชื่ออื่น</p>}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -163,7 +168,7 @@ function ProductFormModal({ product, onClose, onSave }) {
         </div>
         <div className="flex space-x-3 pt-2">
           <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium">ยกเลิก</button>
-          <button type="submit" className="flex-1 px-4 py-2.5 rounded-xl bg-wongnai-orange text-white font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30">บันทึก</button>
+          <button type="submit" disabled={isDuplicate} className={`flex-1 px-4 py-2.5 rounded-xl text-white font-medium transition-all shadow-md ${isDuplicate ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed shadow-none' : 'bg-wongnai-orange hover:bg-orange-600 shadow-orange-500/30'}`}>บันทึก</button>
         </div>
       </form>
     </Modal>
@@ -505,6 +510,7 @@ function AdminDashboard() {
         {(modal === 'addProduct' || modal?.type === 'editProduct') && (
           <ProductFormModal
             product={modal?.type === 'editProduct' ? modal.product : null}
+            products={products}
             onClose={() => setModal(null)}
             onSave={fetchAll}
           />
