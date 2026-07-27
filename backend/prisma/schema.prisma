@@ -86,3 +86,29 @@ model Like {
 
   @@id([userId, postId])
 }
+
+model FridgeIngredient {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String   @default("ทั่วไป")
+  imageUrl    String?
+  recipes     FridgeMenuIngredient[]
+  createdAt   DateTime @default(now())
+}
+
+model FridgeMenu {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  imageUrl    String?
+  ingredients FridgeMenuIngredient[]
+  createdAt   DateTime @default(now())
+}
+
+model FridgeMenuIngredient {
+  id          Int              @id @default(autoincrement())
+  menuId      Int
+  ingredientId Int
+  menu        FridgeMenu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  ingredient  FridgeIngredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+}

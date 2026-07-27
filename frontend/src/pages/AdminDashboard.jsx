@@ -185,6 +185,135 @@ function ProductFormModal({ product, products, onClose, onSave }) {
   );
 }
 
+// ===================== FRIDGE MENU FORM MODAL =====================
+function FridgeMenuFormModal({ menu, onClose, onSave, ingredients }) {
+  const isEdit = !!menu;
+  const [form, setForm] = useState(
+    isEdit
+      ? {
+          name: menu.name,
+          description: menu.description || '',
+          imageUrl: menu.imageUrl || '',
+          ingredientIds: menu.ingredients?.map(i => i.ingredientId) || []
+        }
+      : { name: '', description: '', imageUrl: '', ingredientIds: [] }
+  );
+
+  const toggle = (id) => {
+    setForm(prev => ({
+      ...prev,
+      ingredientIds: prev.ingredientIds.includes(id)
+        ? prev.ingredientIds.filter(p => p !== id)
+        : [...prev.ingredientIds, id]
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const method = isEdit ? 'PUT' : 'POST';
+    const url = isEdit ? `${API}/fridge-menus/${menu.id}` : `${API}/fridge-menus`;
+    fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    }).then(r => r.json()).then(() => { onSave(); onClose(); }).catch(console.error);
+  };
+
+  return (
+    <Modal title={isEdit ? 'แก้ไขเมนูตู้เย็น' : 'เพิ่มเมนูตู้เย็นใหม่'} onClose={onClose}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">ชื่อเมนู *</label>
+          <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+            placeholder="เช่น ข้าวผัดกะเพราไข่ดาว" />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">คำอธิบาย</label>
+          <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
+            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all resize-none h-20"
+            placeholder="อธิบายสั้นๆ..." />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL รูปภาพ</label>
+          <input value={form.imageUrl} onChange={e => setForm({...form, imageUrl: e.target.value})}
+            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+            placeholder="https://..." />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">เลือกวัตถุดิบที่มีในตู้เย็น</label>
+          <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+            {ingredients.map(p => (
+              <button key={p.id} type="button" onClick={() => toggle(p.id)}
+                className={`text-left px-3 py-2 rounded-xl border text-sm transition-all ${form.ingredientIds.includes(p.id) ? 'border-wongnai-orange bg-orange-50 dark:bg-orange-900/30 text-wongnai-orange font-medium' : 'border-gray-200 dark:border-gray-700 dark:text-gray-300 hover:border-gray-300'}`}>
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex space-x-3 pt-2">
+          <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium">ยกเลิก</button>
+          <button type="submit" className="flex-1 px-4 py-2.5 rounded-xl bg-wongnai-orange text-white font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30">บันทึก</button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ===================== FRIDGE INGREDIENT FORM MODAL =====================
+function FridgeIngredientFormModal({ ingredient, ingredients, onClose, onSave }) {
+  const [form, setForm] = useState(ingredient || { name: '', category: 'เนื้อสัตว์', imageUrl: '' });
+
+  const isDuplicate = !ingredient && form.name.trim() !== '' && ingredients?.some(p => p.name.trim().toLowerCase() === form.name.trim().toLowerCase());
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isDuplicate) return;
+    const method = ingredient ? 'PUT' : 'POST';
+    const url = ingredient ? `${API}/fridge-ingredients/${ingredient.id}` : `${API}/fridge-ingredients`;
+    fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    }).then(r => r.json()).then(() => { onSave(); onClose(); }).catch(console.error);
+  };
+
+  return (
+    <Modal title={ingredient ? 'แก้ไขวัตถุดิบตู้เย็น' : 'เพิ่มวัตถุดิบตู้เย็นใหม่'} onClose={onClose}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">ชื่อวัตถุดิบ *</label>
+          <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+            className={`mt-1 w-full px-4 py-2.5 rounded-xl border ${isDuplicate ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-200 dark:border-gray-700 focus:ring-wongnai-orange/50'} bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 transition-all`}
+            placeholder="เช่น หมูสับ" />
+          {isDuplicate && <p className="text-red-500 text-xs mt-1.5 font-bold">⚠️ มีวัตถุดิบชื่อนี้ในระบบแล้ว กรุณาใช้ชื่ออื่น</p>}
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">หมวดหมู่</label>
+          <select value={form.category} onChange={e => setForm({...form, category: e.target.value})}
+            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all">
+            <option>เนื้อสัตว์</option>
+            <option>ผัก</option>
+            <option>ไข่และนม</option>
+            <option>เครื่องปรุง</option>
+            <option>อื่นๆ</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL รูปภาพ</label>
+          <input value={form.imageUrl || ''} onChange={e => setForm({...form, imageUrl: e.target.value})}
+            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+            placeholder="https://..." />
+        </div>
+        <div className="flex space-x-3 pt-2">
+          <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium">ยกเลิก</button>
+          <button type="submit" disabled={isDuplicate} className={`flex-1 px-4 py-2.5 rounded-xl text-white font-medium transition-all shadow-md ${isDuplicate ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed shadow-none' : 'bg-wongnai-orange hover:bg-orange-600 shadow-orange-500/30'}`}>บันทึก</button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 // ===================== MAIN DASHBOARD =====================
 function AdminDashboard() {
   const { user } = useAuth();
@@ -192,15 +321,19 @@ function AdminDashboard() {
   const [stats, setStats] = useState({ userCount: 0, postCount: 0, comboCount: 0, productCount: 0 });
   const [combos, setCombos] = useState([]);
   const [products, setProducts] = useState([]);
+  const [fridgeMenus, setFridgeMenus] = useState([]);
+  const [fridgeIngredients, setFridgeIngredients] = useState([]);
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [users, setUsers] = useState([]);
-  const [modal, setModal] = useState(null); // null | 'addCombo' | 'addProduct' | {type:'editProduct', product}
+  const [modal, setModal] = useState(null); // null | 'addCombo' | 'addProduct' | {type:'editProduct', product} | 'addFridgeMenu' | 'addFridgeIngredient' | {type:'editFridgeMenu', menu} | {type:'editFridgeIngredient', ingredient}
   
   const fetchAll = () => {
     fetch(`${API}/stats`).then(r => r.json()).then(setStats).catch(console.error);
     fetch(`${API}/combos`).then(r => r.json()).then(setCombos).catch(console.error);
     fetch(`${API}/products`).then(r => r.json()).then(setProducts).catch(console.error);
+    fetch(`${API}/fridge-menus`).then(r => r.json()).then(setFridgeMenus).catch(console.error);
+    fetch(`${API}/fridge-ingredients`).then(r => r.json()).then(setFridgeIngredients).catch(console.error);
     fetch(`${API}/posts`).then(r => r.json()).then(setPosts).catch(console.error);
     fetch(`${API}/comments`).then(r => r.json()).then(setComments).catch(console.error);
     fetch(`${API}/users`).then(r => r.json()).then(setUsers).catch(console.error);
@@ -216,6 +349,16 @@ function AdminDashboard() {
   const deleteProduct = (id) => {
     if (!window.confirm('ลบสินค้านี้ใช่ไหม?')) return;
     fetch(`${API}/products/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+  };
+
+  const deleteFridgeMenu = (id) => {
+    if (!window.confirm('ลบเมนูนี้ใช่ไหม?')) return;
+    fetch(`${API}/fridge-menus/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+  };
+
+  const deleteFridgeIngredient = (id) => {
+    if (!window.confirm('ลบวัตถุดิบนี้ใช่ไหม?')) return;
+    fetch(`${API}/fridge-ingredients/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
   };
 
   const deletePost = (id) => {
@@ -235,7 +378,9 @@ function AdminDashboard() {
 
   const tabs = [
     { id: 'combos', label: 'เมนูคอมโบ', icon: Utensils },
-    { id: 'products', label: 'วัตถุดิบ', icon: Package },
+    { id: 'products', label: 'วัตถุดิบ (เซเว่น)', icon: Package },
+    { id: 'fridge_menus', label: 'เมนูจากตู้เย็น', icon: Utensils },
+    { id: 'fridge_ingredients', label: 'วัตถุดิบในตู้เย็น', icon: Package },
     { id: 'posts', label: 'โพสต์ชุมชน', icon: FileText },
     { id: 'ban_history', label: 'ประวัติการแบน', icon: ShieldAlert },
     { id: 'users', label: 'ผู้ใช้งาน', icon: Users },
@@ -386,6 +531,94 @@ function AdminDashboard() {
           </div>
         )}
 
+        {/* ---- FRIDGE MENUS TAB ---- */}
+        {activeTab === 'fridge_menus' && (
+          <div>
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-end">
+              <button onClick={() => setModal('addFridgeMenu')}
+                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm">
+                <Plus className="w-4 h-4" /><span>เพิ่มเมนูตู้เย็นใหม่</span>
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase">
+                  <tr>
+                    {['ID', 'ชื่อเมนู', 'วัตถุดิบที่ใช้', 'จัดการ'].map(h => (
+                      <th key={h} className="px-6 py-3 font-semibold">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
+                  {fridgeMenus.map(menu => (
+                    <tr key={menu.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{menu.id}</td>
+                      <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{menu.name}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400 max-w-[300px] truncate">{menu.ingredients?.map(i => i.ingredient?.name).join(', ')}</td>
+                      <td className="px-6 py-4 flex items-center space-x-2">
+                        <button onClick={() => setModal({ type: 'editFridgeMenu', menu })}
+                          className="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 p-2 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => deleteFridgeMenu(menu.id)}
+                          className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 p-2 rounded-lg transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {fridgeMenus.length === 0 && <tr><td colSpan={4} className="px-6 py-10 text-center text-gray-400">ไม่มีข้อมูล</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ---- FRIDGE INGREDIENTS TAB ---- */}
+        {activeTab === 'fridge_ingredients' && (
+          <div>
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-end">
+              <button onClick={() => setModal('addFridgeIngredient')}
+                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm">
+                <Plus className="w-4 h-4" /><span>เพิ่มวัตถุดิบตู้เย็นใหม่</span>
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase">
+                  <tr>
+                    {['ID', 'ชื่อวัตถุดิบ', 'หมวดหมู่', 'จัดการ'].map(h => (
+                      <th key={h} className="px-6 py-3 font-semibold">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
+                  {fridgeIngredients.map(ing => (
+                    <tr key={ing.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{ing.id}</td>
+                      <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{ing.name}</td>
+                      <td className="px-6 py-4">
+                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg text-xs">{ing.category}</span>
+                      </td>
+                      <td className="px-6 py-4 flex items-center space-x-2">
+                        <button onClick={() => setModal({ type: 'editFridgeIngredient', ingredient: ing })}
+                          className="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 p-2 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => deleteFridgeIngredient(ing.id)}
+                          className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 p-2 rounded-lg transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {fridgeIngredients.length === 0 && <tr><td colSpan={4} className="px-6 py-10 text-center text-gray-400">ไม่มีข้อมูล</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* ---- POSTS MODERATION TAB ---- */}
         {activeTab === 'posts' && (
           <div>
@@ -521,6 +754,20 @@ function AdminDashboard() {
           <ProductFormModal
             product={modal?.type === 'editProduct' ? modal.product : null}
             products={products}
+            onClose={() => setModal(null)}
+            onSave={fetchAll}
+          />
+        )}
+        {modal === 'addFridgeMenu' && (
+          <FridgeMenuFormModal ingredients={fridgeIngredients} onClose={() => setModal(null)} onSave={fetchAll} />
+        )}
+        {modal?.type === 'editFridgeMenu' && (
+          <FridgeMenuFormModal menu={modal.menu} ingredients={fridgeIngredients} onClose={() => setModal(null)} onSave={fetchAll} />
+        )}
+        {(modal === 'addFridgeIngredient' || modal?.type === 'editFridgeIngredient') && (
+          <FridgeIngredientFormModal
+            ingredient={modal?.type === 'editFridgeIngredient' ? modal.ingredient : null}
+            ingredients={fridgeIngredients}
             onClose={() => setModal(null)}
             onSave={fetchAll}
           />

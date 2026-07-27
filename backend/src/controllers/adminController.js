@@ -216,3 +216,123 @@ exports.unbanUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// ==================== FRIDGE INGREDIENTS ====================
+exports.getFridgeIngredients = async (req, res) => {
+  try {
+    const ingredients = await prisma.fridgeIngredient.findMany({ orderBy: { id: 'asc' } });
+    res.json(ingredients);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.createFridgeIngredient = async (req, res) => {
+  try {
+    const { name, category, imageUrl } = req.body;
+    const ingredient = await prisma.fridgeIngredient.create({
+      data: { name, category, imageUrl }
+    });
+    res.status(201).json(ingredient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.updateFridgeIngredient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, category, imageUrl } = req.body;
+    const ingredient = await prisma.fridgeIngredient.update({
+      where: { id: parseInt(id) },
+      data: { name, category, imageUrl }
+    });
+    res.json(ingredient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.deleteFridgeIngredient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.fridgeIngredient.delete({ where: { id: parseInt(id) } });
+    res.json({ message: 'Fridge ingredient deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ==================== FRIDGE MENUS ====================
+exports.getFridgeMenus = async (req, res) => {
+  try {
+    const menus = await prisma.fridgeMenu.findMany({ include: { ingredients: { include: { ingredient: true } } }, orderBy: { id: 'asc' } });
+    res.json(menus);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.deleteFridgeMenu = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.fridgeMenu.delete({ where: { id: parseInt(id) } });
+    res.json({ message: 'Fridge menu deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.updateFridgeMenu = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, imageUrl, ingredientIds } = req.body;
+
+    await prisma.fridgeMenuIngredient.deleteMany({ where: { menuId: parseInt(id) } });
+
+    const menu = await prisma.fridgeMenu.update({
+      where: { id: parseInt(id) },
+      data: {
+        name,
+        description,
+        imageUrl,
+        ingredients: {
+          create: (ingredientIds || []).map(ingId => ({ ingredientId: parseInt(ingId) }))
+        }
+      },
+      include: { ingredients: { include: { ingredient: true } } }
+    });
+
+    res.json(menu);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.createFridgeMenu = async (req, res) => {
+  try {
+    const { name, description, imageUrl, ingredientIds } = req.body;
+    const menu = await prisma.fridgeMenu.create({
+      data: {
+        name,
+        description,
+        imageUrl,
+        ingredients: {
+          create: (ingredientIds || []).map(id => ({ ingredientId: parseInt(id) }))
+        }
+      },
+      include: { ingredients: { include: { ingredient: true } } }
+    });
+    res.status(201).json(menu);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

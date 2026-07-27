@@ -8,39 +8,45 @@ function ComboSearch() {
   const [searchedBudget, setSearchedBudget] = useState(null); // track what was actually searched
   const [activeTab, setActiveTab] = useState('budget'); // 'budget' or 'ingredient'
   const [combos, setCombos] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [fridgeMenus, setFridgeMenus] = useState([]);
+  const [fridgeIngredients, setFridgeIngredients] = useState([]);
+  const [selectedFridgeIngredients, setSelectedFridgeIngredients] = useState([]);
   const [selectedCombo, setSelectedCombo] = useState(null);
 
-  // Fetch combos and products on mount
+  // Fetch combos and fridge data on mount
   useEffect(() => {
     fetch('/api/combos')
       .then(res => res.json())
       .then(data => setCombos(data))
       .catch(err => console.error(err));
 
-    fetch('/api/products')
+    fetch('/api/fridge/menus')
       .then(res => res.json())
-      .then(data => setProducts(data))
+      .then(data => setFridgeMenus(data))
+      .catch(err => console.error(err));
+
+    fetch('/api/fridge/ingredients')
+      .then(res => res.json())
+      .then(data => setFridgeIngredients(data))
       .catch(err => console.error(err));
   }, []);
 
 
 
   const toggleIngredient = (id) => {
-    setSelectedIngredients(prev => 
+    setSelectedFridgeIngredients(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
 
   const handleIngredientSearch = () => {
-    fetch('/api/combos/search', {
+    fetch('/api/fridge/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userIngredients: selectedIngredients })
+      body: JSON.stringify({ userIngredients: selectedFridgeIngredients })
     })
       .then(res => res.json())
-      .then(data => setCombos(data))
+      .then(data => setFridgeMenus(data))
       .catch(err => console.error(err));
   };
 
@@ -147,17 +153,17 @@ function ComboSearch() {
           >
             <h3 className="text-lg font-bold mb-4 text-center text-gray-800 dark:text-gray-200">เลือกวัตถุดิบที่คุณมีอยู่แล้ว</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-              {products.map(product => (
+              {fridgeIngredients.map(product => (
                 <button
                   key={product.id}
                   onClick={() => toggleIngredient(product.id)}
                   className={`flex items-center p-3 rounded-xl border-2 transition-all duration-300 font-medium shadow-sm hover:-translate-y-1 ${
-                    selectedIngredients.includes(product.id) 
+                    selectedFridgeIngredients.includes(product.id) 
                     ? 'border-wongnai-orange bg-orange-50 dark:bg-orange-900/40 text-wongnai-orange' 
                     : 'border-white/50 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 hover:border-orange-200 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
                   }`}
                 >
-                  {selectedIngredients.includes(product.id) ? (
+                  {selectedFridgeIngredients.includes(product.id) ? (
                     <CheckCircle2 className="w-5 h-5 mr-2 text-wongnai-orange flex-shrink-0" />
                   ) : (
                     <Circle className="w-5 h-5 mr-2 text-gray-400 flex-shrink-0" />
@@ -165,7 +171,7 @@ function ComboSearch() {
                   <span className="text-sm">{product.name}</span>
                 </button>
               ))}
-              {products.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
+              {fridgeIngredients.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
             </div>
             <div className="flex justify-center">
               <button 
@@ -173,7 +179,7 @@ function ComboSearch() {
                 className="bg-gray-900 dark:bg-wongnai-orange text-white px-10 py-4 rounded-2xl hover:bg-gray-800 dark:hover:bg-orange-600 transition-all duration-300 shadow-xl shadow-gray-900/20 dark:shadow-orange-500/30 flex items-center font-bold text-lg hover:-translate-y-1"
               >
                 <Search className="w-6 h-6 mr-2" />
-                ค้นหาเมนูคอมโบ
+                ค้นหาเมนูจากวัตถุดิบ
               </button>
             </div>
           </motion.div>
@@ -184,7 +190,9 @@ function ComboSearch() {
       <div className="pt-8">
         <div className="flex justify-between items-end mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">เมนูคอมโบแนะนำ</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {activeTab === 'budget' ? 'เมนูคอมโบแนะนำ (เซเว่น)' : 'เมนูจากวัตถุดิบในตู้ (ทำเอง)'}
+            </h2>
             {searchedBudget && activeTab === 'budget' && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 ค้นหาใกล้เคียงงบ <span className="font-bold text-wongnai-orange">฿{searchedBudget}</span> — เรียงจากใกล้ที่สุดไปหางที่สุด
@@ -197,7 +205,7 @@ function ComboSearch() {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-          {combos.map((combo, index) => (
+          {(activeTab === 'budget' ? combos : fridgeMenus).map((combo, index) => (
             <motion.div 
               key={combo.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -215,13 +223,6 @@ function ComboSearch() {
                 {/* Sparkle Decorations */}
                 <div className="absolute top-6 right-6 text-orange-300/60 text-lg pointer-events-none animate-pulse">✨</div>
                 <div className="absolute top-24 left-4 text-yellow-400/50 text-sm pointer-events-none animate-bounce" style={{animationDuration: '3s'}}>✦</div>
-
-                {/* Official Badge */}
-                {combo.isOfficial && (
-                  <div className="absolute top-3 left-3 bg-white/80 backdrop-blur text-wongnai-orange text-xs font-bold px-2 py-1 rounded-md z-20">
-                    OFFICIAL
-                  </div>
-                )}
 
                 {/* Budget Diff Badge (only shown when searching by budget) */}
                 {activeTab === 'budget' && searchedBudget && (
@@ -253,11 +254,15 @@ function ComboSearch() {
                 <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)] transition-transform duration-300">
                   <h3 className="font-bold text-gray-900 dark:text-gray-900 truncate">{combo.name}</h3>
                   <div className="flex items-center justify-center mt-1 space-x-1">
-                    <span className={`font-bold ${
-                      activeTab === 'budget' && searchedBudget && combo.totalPrice > searchedBudget
-                        ? 'text-red-500'
-                        : 'text-wongnai-orange'
-                    }`}>฿{combo.totalPrice}</span>
+                    {activeTab === 'budget' ? (
+                      <span className={`font-bold ${
+                        searchedBudget && combo.totalPrice > searchedBudget
+                          ? 'text-red-500'
+                          : 'text-wongnai-orange'
+                      }`}>฿{combo.totalPrice}</span>
+                    ) : (
+                       <span className="font-bold text-green-500">ทำเองที่บ้าน 🏡</span>
+                    )}
                   </div>
                   
                   {activeTab === 'ingredient' && combo.missingCount !== undefined ? (
@@ -266,14 +271,18 @@ function ComboSearch() {
                         <p className="text-green-600 truncate flex items-center"><CheckCircle2 className="w-3 h-3 mr-1 flex-shrink-0" /> มีแล้ว: {combo.ownedProducts.map(p => p.name).join(', ')}</p>
                       )}
                       {combo.missingProducts.length > 0 && (
-                        <p className="text-red-500 font-medium truncate bg-red-50 p-1 rounded">ต้องซื้อเพิ่ม: {combo.missingProducts.map(p => p.name).join(', ')}</p>
+                        <p className="text-red-500 font-medium truncate bg-red-50 p-1 rounded">ขาด: {combo.missingProducts.map(p => p.name).join(', ')}</p>
                       )}
                       {combo.missingProducts.length === 0 && (
                         <p className="text-green-600 font-medium truncate bg-green-50 p-1 rounded text-center">วัตถุดิบครบแล้ว! 🎉</p>
                       )}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-500 mt-1 truncate">{combo.ingredients?.map(i => i.product.name).join(' + ')}</p>
+                    <p className="text-xs text-gray-500 mt-1 truncate">
+                      {activeTab === 'budget' 
+                        ? combo.ingredients?.map(i => i.product?.name).join(' + ') 
+                        : combo.ingredients?.map(i => i.ingredient?.name).join(' + ')}
+                    </p>
                   )}
                 </div>
               </div>
@@ -314,20 +323,24 @@ function ComboSearch() {
                 alt={selectedCombo.name} 
                 className="w-full h-full object-cover"
               />
-              {selectedCombo.isOfficial && (
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-wongnai-orange text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm">
-                  OFFICIAL
-                </div>
-              )}
             </div>
             
             <div className="p-6 sm:p-8 space-y-6">
-              {/* Title & Price */}
+              {/* Title & Price/Info */}
               <div className="flex justify-between items-start">
                 <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">{selectedCombo.name}</h2>
                 <div className="text-right flex-shrink-0 ml-4">
-                  <span className="text-sm text-gray-500 dark:text-gray-400 block">ราคารวม</span>
-                  <span className="text-2xl font-black text-wongnai-orange">฿{selectedCombo.totalPrice}</span>
+                  {activeTab === 'budget' ? (
+                    <>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 block">ราคารวม</span>
+                      <span className="text-2xl font-black text-wongnai-orange">฿{selectedCombo.totalPrice}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 block">หมวดหมู่</span>
+                      <span className="text-xl font-black text-green-500">เมนูทำเอง</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -354,9 +367,9 @@ function ComboSearch() {
                 ) : (
                   <ul className="space-y-2">
                     {selectedCombo.ingredients?.map(i => (
-                      <li key={i.product.id} className="flex justify-between text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-lg text-sm">
-                        <span>{i.product.name}</span>
-                        <span className="font-medium">฿{i.product.price}</span>
+                      <li key={activeTab === 'budget' ? i.product?.id : i.ingredient?.id} className="flex justify-between text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-lg text-sm">
+                        <span>{activeTab === 'budget' ? i.product?.name : i.ingredient?.name}</span>
+                        {activeTab === 'budget' && <span className="font-medium">฿{i.product?.price}</span>}
                       </li>
                     ))}
                   </ul>

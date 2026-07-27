@@ -8,6 +8,7 @@ const adminRoutes = require('./routes/admin');
 const productRoutes = require('./routes/products');
 const uploadRoutes = require('./routes/upload');
 const usersRoutes = require('./routes/users');
+const fridgeRoutes = require('./routes/fridge');
 const path = require('path');
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/fridge', fridgeRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Ginraide API is running' });

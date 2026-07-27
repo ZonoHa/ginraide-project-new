@@ -33,4 +33,16 @@ router.delete('/users/:id', adminController.deleteUser);
 router.post('/users/:id/ban', adminController.banUser);
 router.post('/users/:id/unban', adminController.unbanUser);
 
+// Fridge Ingredients
+router.get('/fridge-ingredients', adminController.getFridgeIngredients);
+router.post('/fridge-ingredients', adminController.createFridgeIngredient);
+router.put('/fridge-ingredients/:id', adminController.updateFridgeIngredient);
+router.delete('/fridge-ingredients/:id', adminController.deleteFridgeIngredient);
+
+// Fridge Menus
+router.get('/fridge-menus', adminController.getFridgeMenus);
+router.post('/fridge-menus', adminController.createFridgeMenu);
+router.put('/fridge-menus/:id', adminController.updateFridgeMenu);
+router.delete('/fridge-menus/:id', adminController.deleteFridgeMenu);
+
 module.exports = router;
