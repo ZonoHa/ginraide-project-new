@@ -44,6 +44,15 @@ function ComboFormModal({ combo, onClose, onSave, products }) {
       : { name: '', description: '', totalPrice: '', imageUrl: '', productIds: [] }
   );
 
+  // Auto-calculate total price when products are selected
+  useEffect(() => {
+    const sum = form.productIds.reduce((acc, id) => {
+      const p = products.find(prod => prod.id === id);
+      return acc + (p ? parseFloat(p.price) : 0);
+    }, 0);
+    setForm(prev => ({ ...prev, totalPrice: sum || '' }));
+  }, [form.productIds, products]);
+
   const toggle = (id) => {
     setForm(prev => ({
       ...prev,
@@ -82,9 +91,10 @@ function ComboFormModal({ combo, onClose, onSave, products }) {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">ราคารวม (฿) *</label>
-            <input required type="number" step="0.5" value={form.totalPrice} onChange={e => setForm({...form, totalPrice: e.target.value})}
-              className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
-              placeholder="50" />
+            <input required type="number" step="0.5" value={form.totalPrice} readOnly
+              className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700/50 dark:text-gray-400 outline-none cursor-not-allowed transition-all font-bold"
+              placeholder="0" />
+            <p className="text-xs text-gray-500 mt-1">คำนวณอัตโนมัติจากวัตถุดิบที่เลือก</p>
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL รูปภาพ</label>
