@@ -207,6 +207,15 @@ function ComboSearch() {
               onClick={() => setSelectedCombo(combo)}
             >
               <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-8 px-4 aspect-[4/5] flex flex-col items-center justify-start relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
+                {/* Decorative Ambient Backgrounds */}
+                <div className="absolute -top-6 -right-6 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div className="absolute top-20 -left-10 w-28 h-28 bg-yellow-400/30 rounded-full blur-xl pointer-events-none"></div>
+                <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none"></div>
+                
+                {/* Sparkle Decorations */}
+                <div className="absolute top-6 right-6 text-orange-300/60 text-lg pointer-events-none animate-pulse">✨</div>
+                <div className="absolute top-24 left-4 text-yellow-400/50 text-sm pointer-events-none animate-bounce" style={{animationDuration: '3s'}}>✦</div>
+
                 {/* Official Badge */}
                 {combo.isOfficial && (
                   <div className="absolute top-3 left-3 bg-white/80 backdrop-blur text-wongnai-orange text-xs font-bold px-2 py-1 rounded-md z-20">
