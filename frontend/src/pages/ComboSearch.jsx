@@ -97,7 +97,7 @@ function ComboSearch() {
       </div>
 
       {/* Search & Tabs Glass Container */}
-      <div className="max-w-4xl mx-auto glass p-6 md:p-8 rounded-3xl relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60 dark:border-gray-700/50">
+      <div className="max-w-6xl mx-auto glass p-6 md:p-8 rounded-3xl relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60 dark:border-gray-700/50">
         
         {/* Tabs */}
         <div className="flex flex-wrap justify-center gap-3 mb-8">
@@ -149,10 +149,10 @@ function ComboSearch() {
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl mx-auto"
+            className="max-w-5xl mx-auto w-full"
           >
             <h3 className="text-lg font-bold mb-4 text-center text-gray-800 dark:text-gray-200">เลือกวัตถุดิบที่คุณมีอยู่แล้ว</h3>
-            <div className="grid grid-cols-2 gap-3 mb-8 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8 max-w-5xl mx-auto">
               {fridgeIngredients.slice(0, 12).map(product => (
                 <button
                   key={product.id}
