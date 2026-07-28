@@ -294,8 +294,14 @@ function FridgeIngredientFormModal({ ingredient, ingredients, onClose, onSave })
             className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all">
             <option>เนื้อสัตว์</option>
             <option>ผัก</option>
+            <option>สมุนไพร</option>
+            <option>เห็ด</option>
+            <option>ผลไม้</option>
             <option>ไข่และนม</option>
+            <option>ข้าวและเส้น</option>
+            <option>พริกแกง</option>
             <option>เครื่องปรุง</option>
+            <option>ของแห้งและของหมักดอง</option>
             <option>อื่นๆ</option>
           </select>
         </div>
