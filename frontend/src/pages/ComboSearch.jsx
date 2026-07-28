@@ -11,6 +11,7 @@ function ComboSearch() {
   const [fridgeMenus, setFridgeMenus] = useState([]);
   const [fridgeIngredients, setFridgeIngredients] = useState([]);
   const [selectedFridgeIngredients, setSelectedFridgeIngredients] = useState([]);
+  const [ingredientSearch, setIngredientSearch] = useState('');
   const [selectedCombo, setSelectedCombo] = useState(null);
 
   // Fetch combos and fridge data on mount
@@ -152,8 +153,26 @@ function ComboSearch() {
             className="max-w-5xl mx-auto w-full"
           >
             <h3 className="text-lg font-bold mb-4 text-center text-gray-800 dark:text-gray-200">เลือกวัตถุดิบที่คุณมีอยู่แล้ว</h3>
+            
+            {/* Search Input for Ingredients */}
+            <div className="max-w-xl mx-auto mb-6 relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="ค้นหาวัตถุดิบเพิ่มเติม (พิมพ์ชื่อวัตถุดิบ...)"
+                value={ingredientSearch}
+                onChange={(e) => setIngredientSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 focus:border-wongnai-orange focus:ring-2 focus:ring-orange-500/20 outline-none transition-all text-sm sm:text-base text-gray-900 dark:text-white"
+              />
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8 max-w-5xl mx-auto">
-              {fridgeIngredients.slice(0, 12).map(product => (
+              {(ingredientSearch 
+                ? fridgeIngredients.filter(p => p.name.toLowerCase().includes(ingredientSearch.toLowerCase()))
+                : fridgeIngredients.slice(0, 12)
+              ).map(product => (
                 <button
                   key={product.id}
                   onClick={() => toggleIngredient(product.id)}
@@ -171,7 +190,10 @@ function ComboSearch() {
                   <span className="text-sm truncate">{product.name}</span>
                 </button>
               ))}
-              {fridgeIngredients.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-2 text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
+              {fridgeIngredients.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
+              {fridgeIngredients.length > 0 && ingredientSearch && fridgeIngredients.filter(p => p.name.toLowerCase().includes(ingredientSearch.toLowerCase())).length === 0 && (
+                <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">ไม่พบวัตถุดิบ "{ingredientSearch}"</p>
+              )}
             </div>
             <div className="flex justify-center">
               <button 
