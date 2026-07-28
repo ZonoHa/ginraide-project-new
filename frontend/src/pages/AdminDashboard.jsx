@@ -108,13 +108,18 @@ function ComboFormModal({ combo, onClose, onSave, products }) {
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">เลือกวัตถุดิบ (คลิกเพื่อเลือก)</label>
           <input 
             type="text" 
-            placeholder="ค้นหาชื่อวัตถุดิบเซเว่น..." 
+            placeholder="ค้นหาชื่อวัตถุดิบเซเว่น (คั่นด้วยลูกน้ำได้ เช่น หมู, ไก่)..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-3 py-2 mb-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all text-sm"
           />
           <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-            {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
+            {products.filter(p => {
+              if (!searchQuery) return true;
+              const terms = searchQuery.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+              if (terms.length === 0) return true;
+              return terms.some(term => p.name.toLowerCase().includes(term));
+            }).map(p => (
               <button key={p.id} type="button" onClick={() => toggle(p.id)}
                 className={`text-left px-3 py-2 rounded-xl border text-sm transition-all ${form.productIds.includes(p.id) ? 'border-wongnai-orange bg-orange-50 dark:bg-orange-900/30 text-wongnai-orange font-medium' : 'border-gray-200 dark:border-gray-700 dark:text-gray-300 hover:border-gray-300'}`}>
                 {p.name} <span className="text-xs text-gray-400">฿{p.price}</span>
@@ -253,13 +258,18 @@ function FridgeMenuFormModal({ menu, onClose, onSave, ingredients }) {
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">เลือกวัตถุดิบที่มีในตู้เย็น (คลิกเพื่อเลือก)</label>
           <input 
             type="text" 
-            placeholder="ค้นหาชื่อวัตถุดิบในตู้เย็น..." 
+            placeholder="ค้นหาชื่อวัตถุดิบในตู้เย็น (คั่นด้วยลูกน้ำได้ เช่น หมูสับ, ไข่)..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-3 py-2 mb-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all text-sm"
           />
           <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-            {ingredients.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
+            {ingredients.filter(p => {
+              if (!searchQuery) return true;
+              const terms = searchQuery.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+              if (terms.length === 0) return true;
+              return terms.some(term => p.name.toLowerCase().includes(term));
+            }).map(p => (
               <button key={p.id} type="button" onClick={() => toggle(p.id)}
                 className={`text-left px-3 py-2 rounded-xl border text-sm transition-all ${form.ingredientIds.includes(p.id) ? 'border-wongnai-orange bg-orange-50 dark:bg-orange-900/30 text-wongnai-orange font-medium' : 'border-gray-200 dark:border-gray-700 dark:text-gray-300 hover:border-gray-300'}`}>
                 {p.name}
