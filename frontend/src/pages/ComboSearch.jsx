@@ -221,9 +221,6 @@ function ComboSearch() {
               </p>
             )}
           </div>
-          <button className="text-wongnai-orange font-medium flex items-center hover:underline text-sm">
-            จัดเรียงตามยอดนิยม <ChevronDown className="w-4 h-4 ml-1" />
-          </button>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
