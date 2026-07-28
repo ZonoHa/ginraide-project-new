@@ -152,8 +152,8 @@ function ComboSearch() {
             className="max-w-3xl mx-auto"
           >
             <h3 className="text-lg font-bold mb-4 text-center text-gray-800 dark:text-gray-200">เลือกวัตถุดิบที่คุณมีอยู่แล้ว</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-              {fridgeIngredients.map(product => (
+            <div className="grid grid-cols-2 gap-3 mb-8 max-w-2xl mx-auto">
+              {fridgeIngredients.slice(0, 12).map(product => (
                 <button
                   key={product.id}
                   onClick={() => toggleIngredient(product.id)}
@@ -168,10 +168,10 @@ function ComboSearch() {
                   ) : (
                     <Circle className="w-5 h-5 mr-2 text-gray-400 flex-shrink-0" />
                   )}
-                  <span className="text-sm">{product.name}</span>
+                  <span className="text-sm truncate">{product.name}</span>
                 </button>
               ))}
-              {fridgeIngredients.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
+              {fridgeIngredients.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-2 text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
             </div>
             <div className="flex justify-center">
               <button 
