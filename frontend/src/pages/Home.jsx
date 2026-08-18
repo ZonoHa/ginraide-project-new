@@ -75,7 +75,18 @@ function Home() {
       },
       body: JSON.stringify({ title: newPostTitle, content: newPostContent, imageUrl: selectedImage })
     })
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          if (res.status === 401) {
+            alert('เซสชันหมดอายุ กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่ครับ');
+          } else {
+            alert('เกิดข้อผิดพลาดในการโพสต์: ' + (data.message || ''));
+          }
+          throw new Error('Post failed');
+        }
+        return res.json();
+      })
       .then(() => {
         setNewPostTitle('');
         setNewPostContent('');
