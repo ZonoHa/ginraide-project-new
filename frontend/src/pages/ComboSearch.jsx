@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { Search, ChevronDown, CheckCircle2, Circle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -6,7 +7,11 @@ import { motion } from 'framer-motion';
 function ComboSearch() {
   const [budget, setBudget] = useState('');
   const [searchedBudget, setSearchedBudget] = useState(null); // track what was actually searched
-  const [activeTab, setActiveTab] = useState('budget'); // 'budget' or 'ingredient'
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('tab') === 'ingredient' ? 'ingredient' : 'budget';
+  }); // 'budget' or 'ingredient'
   const [combos, setCombos] = useState([]);
   const [fridgeMenus, setFridgeMenus] = useState([]);
   const [fridgeIngredients, setFridgeIngredients] = useState([]);
@@ -15,6 +20,12 @@ function ComboSearch() {
   const [selectedCombo, setSelectedCombo] = useState(null);
 
   // Fetch combos and fridge data on mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('tab') === 'ingredient') setActiveTab('ingredient');
+    else setActiveTab('budget');
+  }, [location.search]);
+
   useEffect(() => {
     fetch('/api/combos')
       .then(res => res.json())

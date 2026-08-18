@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Utensils, Search, ShieldCheck, Sun, Moon, LogOut, User } from 'lucide-react';
+import { Utensils, Search, ShieldCheck, Sun, Moon, LogOut, User, Package } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 
@@ -38,6 +38,10 @@ function Navbar() {
             <Link to="/search" className="flex items-center text-gray-700 dark:text-gray-300 hover:text-wongnai-orange dark:hover:text-wongnai-orange transition-colors">
               <Search className="h-5 w-5 mr-1" />
               <span className="hidden sm:inline font-medium">ค้นหาคอมโบ</span>
+            </Link>
+            <Link to="/search?tab=ingredient" className="flex items-center text-gray-700 dark:text-gray-300 hover:text-wongnai-orange dark:hover:text-wongnai-orange transition-colors">
+              <Package className="h-5 w-5 mr-1" />
+              <span className="hidden sm:inline font-medium">เมนูจากตู้เย็น</span>
             </Link>
             
             {user?.role === 'ADMIN' && (
