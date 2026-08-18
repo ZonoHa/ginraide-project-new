@@ -98,27 +98,29 @@ exports.likePost = async (req, res) => {
       }
     });
 
+    let liked = false;
     if (existingLike) {
       // Unlike
       await prisma.like.delete({
         where: { userId_postId: { userId: userId, postId: postId } }
       });
-      await prisma.post.update({
-        where: { id: postId },
-        data: { likesCount: { decrement: 1 } }
-      });
-      return res.json({ liked: false });
+      liked = false;
     } else {
       // Like
       await prisma.like.create({
         data: { userId: userId, postId: postId }
       });
-      await prisma.post.update({
-        where: { id: postId },
-        data: { likesCount: { increment: 1 } }
-      });
-      return res.json({ liked: true });
+      liked = true;
     }
+
+    // Accurate recount to prevent negative numbers
+    const actualLikes = await prisma.like.count({ where: { postId: postId } });
+    const updated = await prisma.post.update({
+      where: { id: postId },
+      data: { likesCount: actualLikes }
+    });
+
+    return res.json({ liked: liked, likesCount: updated.likesCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

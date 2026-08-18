@@ -109,7 +109,7 @@ function Home() {
           if (post.id === postId) {
             return {
               ...post,
-              likes: data.liked ? post.likes + 1 : post.likes - 1,
+              likes: data.likesCount !== undefined ? data.likesCount : Math.max(0, data.liked ? post.likes + 1 : post.likes - 1),
               isLikedByMe: data.liked
             };
           }
