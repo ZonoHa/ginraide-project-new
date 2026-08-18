@@ -234,7 +234,7 @@ function ComboSearch() {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
           {(activeTab === 'budget' ? combos : fridgeMenus).map((combo, index) => (
             <motion.div 
               key={combo.id}
@@ -244,7 +244,7 @@ function ComboSearch() {
               className="group cursor-pointer relative"
               onClick={() => setSelectedCombo(combo)}
             >
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-8 px-4 aspect-[4/5] flex flex-col items-center justify-start relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-6 sm:pt-8 px-2 sm:px-4 aspect-[4/5] flex flex-col items-center justify-start relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
                 {/* Decorative Ambient Backgrounds */}
                 <div className="absolute -top-6 -right-6 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl pointer-events-none"></div>
                 <div className="absolute top-20 -left-10 w-28 h-28 bg-yellow-400/30 rounded-full blur-xl pointer-events-none"></div>
@@ -276,14 +276,14 @@ function ComboSearch() {
                   <img 
                     src={combo.imageUrl} 
                     alt={combo.name} 
-                    className="w-28 h-28 sm:w-32 sm:h-32 xl:w-36 xl:h-36 object-cover rounded-full shadow-2xl ring-4 ring-white/70 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative z-10" 
+                    className="w-20 h-20 sm:w-28 sm:h-28 xl:w-36 xl:h-36 object-cover rounded-full shadow-2xl ring-4 ring-white/70 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative z-10" 
                   />
                 </div>
                 
                 {/* Info */}
-                <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)] transition-transform duration-300">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-900 truncate">{combo.name}</h3>
-                  <div className="flex items-center justify-center mt-1 space-x-1">
+                <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-3 sm:p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)] transition-transform duration-300">
+                  <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-gray-900 truncate">{combo.name}</h3>
+                  <div className="flex items-center justify-center mt-1 space-x-1 text-sm sm:text-base">
                     {activeTab === 'budget' ? (
                       <span className={`font-bold ${
                         searchedBudget && combo.totalPrice > searchedBudget
@@ -291,12 +291,12 @@ function ComboSearch() {
                           : 'text-wongnai-orange'
                       }`}>฿{combo.totalPrice}</span>
                     ) : (
-                       <span className="font-bold text-green-500">ทำเองที่บ้าน 🏡</span>
+                       <span className="font-bold text-green-500 text-xs sm:text-sm">ทำเองที่บ้าน 🏡</span>
                     )}
                   </div>
                   
                   {activeTab === 'ingredient' && combo.missingCount !== undefined ? (
-                    <div className="mt-2 text-xs text-left w-full space-y-1">
+                    <div className="mt-2 text-[10px] sm:text-xs text-left w-full space-y-1">
                       {combo.ownedProducts.length > 0 && (
                         <p className="text-green-600 truncate flex items-center"><CheckCircle2 className="w-3 h-3 mr-1 flex-shrink-0" /> มีแล้ว: {combo.ownedProducts.map(p => p.name).join(', ')}</p>
                       )}
@@ -308,7 +308,7 @@ function ComboSearch() {
                       )}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-500 mt-1 truncate">
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1 truncate">
                       {activeTab === 'budget' 
                         ? combo.ingredients?.map(i => i.product?.name).join(' + ') 
                         : combo.ingredients?.map(i => i.ingredient?.name).join(' + ')}
