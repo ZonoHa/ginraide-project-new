@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, FileText, Utensils, Trash2, ShieldAlert, Plus, X, Edit2, Package, ChevronDown, MessageCircle } from 'lucide-react';
+import { Users, FileText, Utensils, Trash2, ShieldAlert, Plus, X, Edit2, Package, ChevronDown, MessageCircle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -359,6 +359,7 @@ function AdminDashboard() {
   const [comments, setComments] = useState([]);
   const [users, setUsers] = useState([]);
   const [modal, setModal] = useState(null); // null | 'addCombo' | 'addProduct' | {type:'editProduct', product} | 'addFridgeMenu' | 'addFridgeIngredient' | {type:'editFridgeMenu', menu} | {type:'editFridgeIngredient', ingredient}
+  const [tableSearchQuery, setTableSearchQuery] = useState('');
   
   const fetchAll = () => {
     fetch(`${API}/stats`).then(r => r.json()).then(setStats).catch(console.error);
@@ -467,7 +468,7 @@ function AdminDashboard() {
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
         <div className="flex border-b border-gray-100 dark:border-gray-800">
           {tabs.map(({ id, label, icon: Icon }) => (
-            <button key={id} onClick={() => setActiveTab(id)}
+            <button key={id} onClick={() => { setActiveTab(id); setTableSearchQuery(''); }}
               className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium transition-all border-b-2 ${activeTab === id ? 'border-wongnai-orange text-wongnai-orange' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>
               <Icon className="w-4 h-4" />
               <span>{label}</span>
@@ -478,9 +479,14 @@ function AdminDashboard() {
         {/* ---- COMBOS TAB ---- */}
         {activeTab === 'combos' && (
           <div>
-            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-end">
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center space-x-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder="ค้นหาชื่อคอมโบ..." value={tableSearchQuery} onChange={e => setTableSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all dark:text-white" />
+              </div>
               <button onClick={() => setModal('addCombo')}
-                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm">
+                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm flex-shrink-0">
                 <Plus className="w-4 h-4" /><span>เพิ่มคอมโบใหม่</span>
               </button>
             </div>
@@ -494,7 +500,7 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
-                  {combos.map(combo => (
+                  {combos.filter(combo => combo.name.toLowerCase().includes(tableSearchQuery.toLowerCase())).map(combo => (
                     <tr key={combo.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{combo.id}</td>
                       <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{combo.name}</td>
@@ -522,9 +528,14 @@ function AdminDashboard() {
         {/* ---- PRODUCTS TAB ---- */}
         {activeTab === 'products' && (
           <div>
-            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-end">
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center space-x-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder="ค้นหาชื่อสินค้า..." value={tableSearchQuery} onChange={e => setTableSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all dark:text-white" />
+              </div>
               <button onClick={() => setModal('addProduct')}
-                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm">
+                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm flex-shrink-0">
                 <Plus className="w-4 h-4" /><span>เพิ่มสินค้าใหม่</span>
               </button>
             </div>
@@ -538,7 +549,7 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
-                  {products.map(product => (
+                  {products.filter(product => product.name.toLowerCase().includes(tableSearchQuery.toLowerCase())).map(product => (
                     <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{product.id}</td>
                       <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{product.name}</td>
@@ -568,9 +579,14 @@ function AdminDashboard() {
         {/* ---- FRIDGE MENUS TAB ---- */}
         {activeTab === 'fridge_menus' && (
           <div>
-            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-end">
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center space-x-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder="ค้นหาชื่อเมนู..." value={tableSearchQuery} onChange={e => setTableSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all dark:text-white" />
+              </div>
               <button onClick={() => setModal('addFridgeMenu')}
-                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm">
+                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm flex-shrink-0">
                 <Plus className="w-4 h-4" /><span>เพิ่มเมนูตู้เย็นใหม่</span>
               </button>
             </div>
@@ -584,7 +600,7 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
-                  {fridgeMenus.map(menu => (
+                  {fridgeMenus.filter(menu => menu.name.toLowerCase().includes(tableSearchQuery.toLowerCase())).map(menu => (
                     <tr key={menu.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{menu.id}</td>
                       <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{menu.name}</td>
@@ -611,9 +627,14 @@ function AdminDashboard() {
         {/* ---- FRIDGE INGREDIENTS TAB ---- */}
         {activeTab === 'fridge_ingredients' && (
           <div>
-            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-end">
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center space-x-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder="ค้นหาชื่อวัตถุดิบ..." value={tableSearchQuery} onChange={e => setTableSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all dark:text-white" />
+              </div>
               <button onClick={() => setModal('addFridgeIngredient')}
-                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm">
+                className="flex items-center space-x-2 bg-wongnai-orange text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all shadow-md shadow-orange-500/30 text-sm flex-shrink-0">
                 <Plus className="w-4 h-4" /><span>เพิ่มวัตถุดิบตู้เย็นใหม่</span>
               </button>
             </div>
@@ -627,7 +648,7 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
-                  {fridgeIngredients.map(ing => (
+                  {fridgeIngredients.filter(ing => ing.name.toLowerCase().includes(tableSearchQuery.toLowerCase())).map(ing => (
                     <tr key={ing.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{ing.id}</td>
                       <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{ing.name}</td>
