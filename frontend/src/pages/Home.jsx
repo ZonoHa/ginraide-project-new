@@ -460,9 +460,9 @@ function Home() {
                       <div className="flex-1 flex flex-col group">
                         <div className="flex items-start justify-between">
                           <div>
-                            <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-700 shadow-sm inline-block">
-                              <span className="font-bold text-sm text-gray-900 dark:text-gray-100 mr-2">{comment.author.username}</span>
-                              <span className="text-sm text-gray-700 dark:text-gray-300 break-words">{comment.text}</span>
+                            <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-700 shadow-sm inline-block max-w-[90%]">
+                              <div className="font-bold text-sm text-gray-900 dark:text-gray-100 mb-0.5">{comment.author.username}</div>
+                              <div className="text-sm text-gray-700 dark:text-gray-300 break-words">{comment.text}</div>
                             </div>
                             <div className="text-[11px] text-gray-400 mt-1 ml-2">
                               {new Date(comment.createdAt).toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} น.
