@@ -325,7 +325,7 @@ function ComboSearch() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl border border-gray-100 dark:border-gray-800 overflow-y-auto z-10 max-h-[90vh] flex flex-col"
+            className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl border border-gray-100 dark:border-gray-800 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-10 max-h-[90vh] flex flex-col"
           >
             {/* Close button */}
             <button 
@@ -412,14 +412,6 @@ function ComboSearch() {
               )}
 
               
-              <div className="pt-4 flex justify-end border-t border-gray-100 dark:border-gray-800">
-                <button 
-                  onClick={() => setSelectedCombo(null)}
-                  className="bg-gray-900 text-white px-8 py-3 rounded-xl hover:bg-gray-800 transition-colors font-medium"
-                >
-                  ปิดหน้าต่าง
-                </button>
-              </div>
             </div>
           </motion.div>
         </div>,
