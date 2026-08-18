@@ -4,13 +4,15 @@ const prisma = new PrismaClient();
 // ==================== STATS ====================
 exports.getStats = async (req, res) => {
   try {
-    const [userCount, postCount, comboCount, productCount] = await Promise.all([
+    const [userCount, postCount, comboCount, productCount, fridgeMenuCount, fridgeIngredientCount] = await Promise.all([
       prisma.user.count(),
       prisma.post.count(),
       prisma.comboRecipe.count(),
-      prisma.product.count()
+      prisma.product.count(),
+      prisma.fridgeMenu.count(),
+      prisma.fridgeIngredient.count()
     ]);
-    res.json({ userCount, postCount, comboCount, productCount });
+    res.json({ userCount, postCount, comboCount, productCount, fridgeMenuCount, fridgeIngredientCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

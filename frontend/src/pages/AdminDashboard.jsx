@@ -350,7 +350,7 @@ function FridgeIngredientFormModal({ ingredient, ingredients, onClose, onSave })
 function AdminDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('combos');
-  const [stats, setStats] = useState({ userCount: 0, postCount: 0, comboCount: 0, productCount: 0 });
+  const [stats, setStats] = useState({ userCount: 0, postCount: 0, comboCount: 0, productCount: 0, fridgeMenuCount: 0, fridgeIngredientCount: 0 });
   const [combos, setCombos] = useState([]);
   const [products, setProducts] = useState([]);
   const [fridgeMenus, setFridgeMenus] = useState([]);
@@ -441,12 +441,14 @@ function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
           { label: 'สมาชิก', value: stats.userCount, icon: Users, color: 'blue' },
-          { label: 'โพสต์', value: stats.postCount, icon: FileText, color: 'green' },
-          { label: 'คอมโบ', value: stats.comboCount, icon: Utensils, color: 'orange' },
-          { label: 'วัตถุดิบ', value: stats.productCount, icon: Package, color: 'purple' },
+          { label: 'โพสต์ชุมชน', value: stats.postCount, icon: FileText, color: 'green' },
+          { label: 'คอมโบเซเว่น', value: stats.comboCount, icon: Utensils, color: 'orange' },
+          { label: 'เมนูตู้เย็น', value: stats.fridgeMenuCount, icon: Utensils, color: 'orange' },
+          { label: 'ของเซเว่น', value: stats.productCount, icon: Package, color: 'purple' },
+          { label: 'ของตู้เย็น', value: stats.fridgeIngredientCount, icon: Package, color: 'purple' },
         ].map(({ label, value, icon: Icon, color }) => (
           <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center space-x-4">
