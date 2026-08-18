@@ -241,7 +241,7 @@ function ComboSearch() {
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
-          {(activeTab === 'budget' ? combos : fridgeMenus).slice(0, showAll ? undefined : 4).map((combo, index) => (
+          {(activeTab === 'budget' ? combos : fridgeMenus).slice(0, showAll ? undefined : 6).map((combo, index) => (
             <motion.div 
               key={combo.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -250,7 +250,7 @@ function ComboSearch() {
               className="group cursor-pointer relative"
               onClick={() => setSelectedCombo(combo)}
             >
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-6 sm:pt-8 px-2 sm:px-4 aspect-[4/5] flex flex-col items-center justify-start relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-6 sm:pt-8 flex flex-col items-center justify-between h-full relative overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 border border-white/50">
                 {/* Decorative Ambient Backgrounds */}
                 <div className="absolute -top-6 -right-6 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl pointer-events-none"></div>
                 <div className="absolute top-20 -left-10 w-28 h-28 bg-yellow-400/30 rounded-full blur-xl pointer-events-none"></div>
@@ -277,7 +277,7 @@ function ComboSearch() {
                 )}
                 
                 {/* Image */}
-                <div className="relative mt-2 sm:mt-0">
+                <div className="relative mt-2 sm:mt-0 px-2 sm:px-4 mb-4">
                   <div className="absolute inset-0 bg-wongnai-orange/20 blur-2xl rounded-full scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <img 
                     src={combo.imageUrl} 
@@ -287,7 +287,7 @@ function ComboSearch() {
                 </div>
                 
                 {/* Info */}
-                <div className="text-center w-full bg-white/95 backdrop-blur-md absolute bottom-0 left-0 right-0 p-3 sm:p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)] transition-transform duration-300">
+                <div className="text-center w-full bg-white/95 backdrop-blur-md mt-auto p-3 sm:p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)] transition-transform duration-300">
                   <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-gray-900 truncate">{combo.name}</h3>
                   <div className="flex items-center justify-center mt-1 space-x-1 text-sm sm:text-base">
                     {activeTab === 'budget' ? (
@@ -326,7 +326,7 @@ function ComboSearch() {
           ))}
         </div>
         
-        {((activeTab === 'budget' ? combos : fridgeMenus).length > 4) && (
+        {((activeTab === 'budget' ? combos : fridgeMenus).length > 6) && (
           <div className="mt-8 flex justify-center">
             <button
               onClick={() => setShowAll(!showAll)}
