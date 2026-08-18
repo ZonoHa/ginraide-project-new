@@ -396,18 +396,21 @@ function ComboSearch() {
               </div>
 
               {/* Instructions */}
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3">วิธีทำ</h3>
-                <div className="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/20">
-                  {selectedCombo.description ? (
-                    <div className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-line font-medium">
-                      {selectedCombo.description}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 italic">ไม่มีวิธีทำสำหรับเมนูนี้</p>
-                  )}
+              {activeTab !== 'budget' && (
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3">วิธีทำ</h3>
+                  <div className="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/20">
+                    {selectedCombo.description ? (
+                      <div className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-line font-medium">
+                        {selectedCombo.description}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 italic">ไม่มีวิธีทำสำหรับเมนูนี้</p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
+
               
               <div className="pt-4 flex justify-end border-t border-gray-100 dark:border-gray-800">
                 <button 
