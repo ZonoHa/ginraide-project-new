@@ -18,12 +18,14 @@ function ComboSearch() {
   const [selectedFridgeIngredients, setSelectedFridgeIngredients] = useState([]);
   const [ingredientSearch, setIngredientSearch] = useState('');
   const [selectedCombo, setSelectedCombo] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   // Fetch combos and fridge data on mount
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('tab') === 'ingredient') setActiveTab('ingredient');
     else setActiveTab('budget');
+    setShowAll(false);
   }, [location.search]);
 
   useEffect(() => {
@@ -58,7 +60,10 @@ function ComboSearch() {
       body: JSON.stringify({ userIngredients: selectedFridgeIngredients })
     })
       .then(res => res.json())
-      .then(data => { if (Array.isArray(data)) setFridgeMenus(data); })
+      .then(data => { 
+        if (Array.isArray(data)) setFridgeMenus(data); 
+        setShowAll(false);
+      })
       .catch(err => console.error(err));
   };
 
@@ -68,6 +73,7 @@ function ComboSearch() {
       .then(data => {
         setCombos(data);
         setSearchedBudget(parseFloat(budget)); // remember what budget was searched
+        setShowAll(false);
       })
       .catch(err => console.error(err));
   };
@@ -235,7 +241,7 @@ function ComboSearch() {
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
-          {(activeTab === 'budget' ? combos : fridgeMenus).map((combo, index) => (
+          {(activeTab === 'budget' ? combos : fridgeMenus).slice(0, showAll ? undefined : 4).map((combo, index) => (
             <motion.div 
               key={combo.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -319,6 +325,17 @@ function ComboSearch() {
             </motion.div>
           ))}
         </div>
+        
+        {((activeTab === 'budget' ? combos : fridgeMenus).length > 4) && (
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 px-8 py-3 rounded-full font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm hover:-translate-y-1"
+            >
+              {showAll ? 'แสดงน้อยลง' : 'ดูทั้งหมด'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Combo Detail Modal via Portal */}
