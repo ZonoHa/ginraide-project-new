@@ -75,7 +75,7 @@ function AuthModal({ mode: initialMode = 'login', onClose }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 30 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 overflow-y-auto z-10 max-h-[90vh]"
+        className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-10 max-h-[90vh]"
       >
         {/* Decorative top bar */}
         <div className="h-1.5 bg-gradient-to-r from-wongnai-orange via-orange-400 to-yellow-400" />
