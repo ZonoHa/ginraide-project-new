@@ -3,6 +3,7 @@ import { Users, FileText, Utensils, Trash2, ShieldAlert, Plus, X, Edit2, Package
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const API = '/api/admin';
 
@@ -347,8 +348,9 @@ function FridgeIngredientFormModal({ ingredient, ingredients, onClose, onSave })
 }
 
 // ===================== MAIN DASHBOARD =====================
-function AdminDashboard() {
-  const { user } = useAuth();
+export default function AdminDashboard() {
+  const { user, getToken } = useAuth();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('combos');
   const [stats, setStats] = useState({ userCount: 0, postCount: 0, comboCount: 0, productCount: 0, fridgeMenuCount: 0, fridgeIngredientCount: 0 });
   const [combos, setCombos] = useState([]);
@@ -376,42 +378,58 @@ function AdminDashboard() {
 
   const deleteCombo = (id) => {
     if (!window.confirm('ลบคอมโบนี้ใช่ไหม?')) return;
-    fetch(`${API}/combos/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/combos/${id}`, { method: 'DELETE' })
+      .then(() => { fetchAll(); addToast('ลบคอมโบสำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการลบคอมโบ', 'error'); });
   };
 
   const deleteProduct = (id) => {
     if (!window.confirm('ลบสินค้านี้ใช่ไหม?')) return;
-    fetch(`${API}/products/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/products/${id}`, { method: 'DELETE' })
+      .then(() => { fetchAll(); addToast('ลบวัตถุดิบสำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการลบ', 'error'); });
   };
 
   const deleteFridgeMenu = (id) => {
     if (!window.confirm('ลบเมนูนี้ใช่ไหม?')) return;
-    fetch(`${API}/fridge-menus/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/fridge-menus/${id}`, { method: 'DELETE' })
+      .then(() => { fetchAll(); addToast('ลบเมนูตู้เย็นสำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการลบ', 'error'); });
   };
 
   const deleteFridgeIngredient = (id) => {
     if (!window.confirm('ลบวัตถุดิบนี้ใช่ไหม?')) return;
-    fetch(`${API}/fridge-ingredients/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/fridge-ingredients/${id}`, { method: 'DELETE' })
+      .then(() => { fetchAll(); addToast('ลบวัตถุดิบตู้เย็นสำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการลบ', 'error'); });
   };
 
   const deletePost = (id) => {
     if (!window.confirm('ลบโพสต์นี้ใช่ไหม?')) return;
-    fetch(`${API}/posts/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/posts/${id}`, { method: 'DELETE' })
+      .then(() => { fetchAll(); addToast('ลบโพสต์สำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการลบ', 'error'); });
   };
 
   const unbanUser = (id) => {
     if (!window.confirm('ปลดแบนให้ผู้ใช้นี้ใช่ไหม?')) return;
-    fetch(`${API}/users/${id}/unban`, { method: 'POST' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/users/${id}/unban`, { method: 'POST' })
+      .then(() => { fetchAll(); addToast('ปลดแบนผู้ใช้สำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการปลดแบน', 'error'); });
   };
 
   const banUser = (id) => {
     if (!window.confirm('ระงับสิทธิ์การคอมเมนต์ผู้ใช้นี้เป็นเวลา 3 วันใช่ไหม?')) return;
-    fetch(`${API}/users/${id}/ban`, { method: 'POST' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/users/${id}/ban`, { method: 'POST' })
+      .then(() => { fetchAll(); addToast('แบนผู้ใช้สำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการแบน', 'error'); });
   };
 
   const deleteUser = (id) => {
     if (!window.confirm('ลบบัญชีผู้ใช้นี้ถาวร รวมถึงโพสต์และคอมเมนต์ทั้งหมดใช่ไหม?')) return;
-    fetch(`${API}/users/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
+    fetch(`${API}/users/${id}`, { method: 'DELETE' })
+      .then(() => { fetchAll(); addToast('ลบผู้ใช้สำเร็จ', 'success'); })
+      .catch(err => { console.error(err); addToast('เกิดข้อผิดพลาดในการลบ', 'error'); });
   };
 
   const tabs = [
@@ -862,4 +880,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+

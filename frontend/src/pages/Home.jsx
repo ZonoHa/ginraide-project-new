@@ -3,9 +3,11 @@ import { Heart, MessageCircle, Share2, Image as ImageIcon, MoreHorizontal, Trash
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 function Home() {
   const { user, getToken } = useAuth();
+  const { addToast } = useToast();
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostTitle, setNewPostTitle] = useState('');
@@ -68,9 +70,9 @@ function Home() {
   }, [posts]);
 
   const handleCreatePost = () => {
-    if (!user) return alert('กรุณาเข้าสู่ระบบก่อนโพสต์');
+    if (!user) return addToast('กรุณาเข้าสู่ระบบก่อนโพสต์', 'error');
     if (!newPostTitle || !newPostContent) {
-      alert('กรุณากรอกหัวข้อและเนื้อหา');
+      addToast('กรุณากรอกหัวข้อและเนื้อหา', 'error');
       return;
     }
     
@@ -86,9 +88,9 @@ function Home() {
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           if (res.status === 401) {
-            alert('เซสชันหมดอายุ กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่ครับ');
+            addToast('เซสชันหมดอายุ กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่ครับ', 'error');
           } else {
-            alert('เกิดข้อผิดพลาดในการโพสต์: ' + (data.message || ''));
+            addToast('เกิดข้อผิดพลาดในการโพสต์: ' + (data.message || ''), 'error');
           }
           throw new Error('Post failed');
         }
@@ -99,6 +101,7 @@ function Home() {
         setNewPostContent('');
         setSelectedImage(null);
         fetchPosts(); // Refresh feed
+        addToast('โพสต์สำเร็จแล้ว', 'success');
       })
       .catch(err => console.error(err));
   };

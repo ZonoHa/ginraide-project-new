@@ -4,10 +4,12 @@ import { Heart, MessageCircle, Edit2, Image as ImageIcon, Check, X, ShieldAlert 
 import { motion, AnimatePresence } from 'framer-motion';
 import { FastAverageColor } from 'fast-average-color';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 function Profile() {
   const { username } = useParams();
   const { user, getToken, updateUser } = useAuth();
+  const { addToast } = useToast();
   
   const [profileData, setProfileData] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -85,12 +87,13 @@ function Profile() {
       if (res.ok) {
         setEditImage(data.imageUrl);
         setIsEditing(true);
+        addToast('อัปโหลดรูปภาพสำเร็จ', 'success');
       } else {
-        alert('Upload failed');
+        addToast('อัปโหลดรูปภาพไม่สำเร็จ', 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Error uploading image');
+      addToast('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ', 'error');
     } finally {
       setIsUploading(false);
     }
@@ -113,8 +116,9 @@ function Profile() {
           updateUser({ bio: editBio, profileImageUrl: editImage });
         }
         fetchProfile(); // refresh data
+        addToast('บันทึกโปรไฟล์สำเร็จ', 'success');
       } else {
-        alert('Failed to update profile');
+        addToast('อัปเดตโปรไฟล์ไม่สำเร็จ', 'error');
       }
     } catch (err) {
       console.error(err);
@@ -129,13 +133,13 @@ function Profile() {
         headers: { 'Authorization': `Bearer ${getToken()}` }
       });
       if (res.ok) {
-        alert('แบนผู้ใช้สำเร็จ');
+        addToast('แบนผู้ใช้สำเร็จ', 'success');
       } else {
-        alert('เกิดข้อผิดพลาดในการแบน');
+        addToast('เกิดข้อผิดพลาดในการแบน', 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('เกิดข้อผิดพลาด');
+      addToast('เกิดข้อผิดพลาด', 'error');
     }
   };
 
