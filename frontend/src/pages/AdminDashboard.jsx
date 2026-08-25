@@ -783,6 +783,7 @@ function AdminDashboard() {
               </tbody>
             </table>
           </div>
+          </div>
         )}
 
         {/* ---- BAN HISTORY TAB ---- */}
