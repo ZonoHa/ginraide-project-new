@@ -404,6 +404,11 @@ function AdminDashboard() {
     fetch(`${API}/users/${id}/unban`, { method: 'POST' }).then(() => fetchAll()).catch(console.error);
   };
 
+  const banUser = (id) => {
+    if (!window.confirm('ระงับสิทธิ์การคอมเมนต์ผู้ใช้นี้เป็นเวลา 3 วันใช่ไหม?')) return;
+    fetch(`${API}/users/${id}/ban`, { method: 'POST' }).then(() => fetchAll()).catch(console.error);
+  };
+
   const deleteUser = (id) => {
     if (!window.confirm('ลบบัญชีผู้ใช้นี้ถาวร รวมถึงโพสต์และคอมเมนต์ทั้งหมดใช่ไหม?')) return;
     fetch(`${API}/users/${id}`, { method: 'DELETE' }).then(() => fetchAll()).catch(console.error);
@@ -740,12 +745,18 @@ function AdminDashboard() {
                     </td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{userItem._count.posts} โพสต์</td>
                     <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{new Date(userItem.createdAt).toLocaleDateString('th-TH')}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 flex space-x-2">
                       {userItem.id !== user.id && (
-                        <button onClick={() => deleteUser(userItem.id)} title="ลบผู้ใช้นี้ทิ้งถาวร"
-                          className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 p-2 rounded-lg transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <>
+                          <button onClick={() => banUser(userItem.id)} title="ระงับสิทธิ์การคอมเมนต์ 3 วัน"
+                            className="text-orange-500 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/40 p-2 rounded-lg transition-colors">
+                            <ShieldAlert className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => deleteUser(userItem.id)} title="ลบผู้ใช้นี้ทิ้งถาวร"
+                            className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 p-2 rounded-lg transition-colors">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
                       )}
                     </td>
                   </tr>
