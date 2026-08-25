@@ -724,18 +724,36 @@ function AdminDashboard() {
 
         {/* ---- USERS TAB ---- */}
         {activeTab === 'users' && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase">
-                <tr>
-                  {['ID', 'Username', 'สิทธิ์', 'โพสต์', 'สมัครเมื่อ', 'จัดการ'].map(h => (
-                    <th key={h} className="px-6 py-3 font-semibold">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
-                {users.map(userItem => (
-                  <tr key={userItem.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+          <div>
+            <div className="p-4 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center space-x-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder="ค้นหาชื่อผู้ใช้งาน (Username)..." value={tableSearchQuery} onChange={e => setTableSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all dark:text-white" />
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase">
+                  <tr>
+                    {['ID', 'Username', 'สิทธิ์', 'โพสต์', 'สมัครเมื่อ', 'จัดการ'].map(h => (
+                      <th key={h} className="px-6 py-3 font-semibold">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-800 text-sm">
+                  {users
+                    .filter(userItem => userItem.username.toLowerCase().includes(tableSearchQuery.toLowerCase()))
+                    .sort((a, b) => {
+                      if (!tableSearchQuery) return 0;
+                      const q = tableSearchQuery.toLowerCase();
+                      const aIndex = a.username.toLowerCase().indexOf(q);
+                      const bIndex = b.username.toLowerCase().indexOf(q);
+                      if (aIndex === bIndex) return a.username.length - b.username.length;
+                      return aIndex - bIndex;
+                    })
+                    .map(userItem => (
+                      <tr key={userItem.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">#{userItem.id}</td>
                     <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">@{userItem.username}</td>
                     <td className="px-6 py-4">
