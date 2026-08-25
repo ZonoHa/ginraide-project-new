@@ -28,21 +28,25 @@ function ComboSearch() {
     setShowAll(false);
   }, [location.search]);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    fetch('/api/combos')
-      .then(res => res.json())
-      .then(data => { if (Array.isArray(data)) setCombos(data); })
-      .catch(err => console.error(err));
-
-    fetch('/api/fridge/menus')
-      .then(res => res.json())
-      .then(data => { if (Array.isArray(data)) setFridgeMenus(data); })
-      .catch(err => console.error(err));
-
-    fetch('/api/fridge/ingredients')
-      .then(res => res.json())
-      .then(data => { if (Array.isArray(data)) setFridgeIngredients(data); })
-      .catch(err => console.error(err));
+    setIsLoading(true);
+    Promise.all([
+      fetch('/api/combos').then(res => res.json()),
+      fetch('/api/fridge/menus').then(res => res.json()),
+      fetch('/api/fridge/ingredients').then(res => res.json())
+    ])
+      .then(([combosData, menusData, ingredientsData]) => {
+        if (Array.isArray(combosData)) setCombos(combosData);
+        if (Array.isArray(menusData)) setFridgeMenus(menusData);
+        if (Array.isArray(ingredientsData)) setFridgeIngredients(ingredientsData);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setIsLoading(false);
+      });
   }, []);
 
 
@@ -241,7 +245,26 @@ function ComboSearch() {
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
-          {(activeTab === 'budget' ? combos : fridgeMenus).slice(0, showAll ? undefined : 6).map((combo, index) => (
+          {isLoading ? (
+            [1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 animate-pulse">
+                <div className="w-full h-24 sm:h-32 bg-gray-200 dark:bg-gray-700"></div>
+                <div className="p-3 space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))
+          ) : (activeTab === 'budget' ? combos : fridgeMenus).length === 0 ? (
+            <div className="col-span-full text-center text-gray-500 py-10 flex flex-col items-center">
+              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                <Search className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">ไม่พบเมนูที่ค้นหา</h3>
+              <p className="text-sm">ลองค้นหาด้วยคำอื่น หรือเพิ่มวัตถุดิบดูนะครับ</p>
+            </div>
+          ) : (
+            (activeTab === 'budget' ? combos : fridgeMenus).slice(0, showAll ? undefined : 6).map((combo, index) => (
             <motion.div 
               key={combo.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -323,7 +346,7 @@ function ComboSearch() {
                 </div>
               </div>
             </motion.div>
-          ))}
+          )))}
         </div>
         
         {((activeTab === 'budget' ? combos : fridgeMenus).length > 6) && (

@@ -22,8 +22,10 @@ function Home() {
   const [editPostTitle, setEditPostTitle] = useState('');
   const [editPostContent, setEditPostContent] = useState('');
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchPosts = () => {
+    setIsLoading(true);
     const headers = {};
     const token = getToken();
     if (token) {
@@ -38,8 +40,12 @@ function Home() {
           console.error("API error:", data);
           setPosts([]);
         }
+        setIsLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -338,7 +344,34 @@ function Home() {
 
       {/* Feed */}
       <div className="space-y-6">
-        {posts.map((post, index) => (
+        {isLoading ? (
+          [1, 2, 3].map(i => (
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 animate-pulse">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                <div className="space-y-2">
+                  <div className="w-24 h-4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+                  <div className="w-16 h-3 bg-gray-200 dark:bg-gray-800 rounded"></div>
+                </div>
+              </div>
+              <div className="w-3/4 h-5 bg-gray-200 dark:bg-gray-800 rounded mb-3"></div>
+              <div className="w-full h-4 bg-gray-200 dark:bg-gray-800 rounded mb-2"></div>
+              <div className="w-5/6 h-4 bg-gray-200 dark:bg-gray-800 rounded mb-4"></div>
+              <div className="w-full h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl mb-4"></div>
+            </div>
+          ))
+        ) : posts.length === 0 ? (
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 text-center shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center">
+            <div className="w-24 h-24 mb-6 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
+              <MessageCircle className="w-10 h-10 text-wongnai-orange opacity-50" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">ยังไม่มีโพสต์ในคอมมิวนิตี้</h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+              มาเริ่มแชร์สูตรอาหารหรือถาม-ตอบเมนูเด็ดๆ เป็นคนแรกกันเถอะ!
+            </p>
+          </div>
+        ) : (
+          posts.map((post, index) => (
           <motion.div 
             key={post.id}
             id={`post-${post.id}`}
@@ -520,7 +553,7 @@ function Home() {
               </motion.div>
             )}
           </motion.div>
-        ))}
+        )))}
       </div>
 
       {/* Edit Post Modal */}
