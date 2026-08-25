@@ -23,6 +23,7 @@ function Home() {
   const [editPostContent, setEditPostContent] = useState('');
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const fetchPosts = () => {
     setIsLoading(true);
@@ -371,7 +372,7 @@ function Home() {
             </p>
           </div>
         ) : (
-          posts.map((post, index) => (
+          posts.slice(0, visibleCount).map((post, index) => (
           <motion.div 
             key={post.id}
             id={`post-${post.id}`}
@@ -555,6 +556,18 @@ function Home() {
           </motion.div>
         )))}
       </div>
+
+      {/* Load More Button */}
+      {!isLoading && visibleCount < posts.length && (
+        <div className="flex justify-center mt-8 mb-4">
+          <button
+            onClick={() => setVisibleCount(prev => prev + 10)}
+            className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 px-8 py-3 rounded-full font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm hover:-translate-y-1 border border-gray-200 dark:border-gray-800"
+          >
+            โหลดเพิ่มเติม (เหลืออีก {posts.length - visibleCount} โพสต์)
+          </button>
+        </div>
+      )}
 
       {/* Edit Post Modal */}
       <AnimatePresence>
