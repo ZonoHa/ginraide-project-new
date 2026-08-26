@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, FileText, Utensils, Trash2, ShieldAlert, Plus, X, Edit2, Package, ChevronDown, MessageCircle, Search } from 'lucide-react';
+import { Users, FileText, Utensils, Trash2, ShieldAlert, ShieldCheck, Plus, X, Edit2, Package, ChevronDown, MessageCircle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -769,10 +769,17 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4 flex space-x-2">
                       {userItem.id !== user.id && (
                         <>
-                          <button onClick={() => banUser(userItem.id)} title="ระงับสิทธิ์การคอมเมนต์ 3 วัน"
-                            className="text-orange-500 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/40 p-2 rounded-lg transition-colors">
-                            <ShieldAlert className="w-4 h-4" />
-                          </button>
+                          {userItem.commentBanUntil && new Date(userItem.commentBanUntil) > new Date() ? (
+                            <button onClick={() => unbanUser(userItem.id)} title="ปลดแบน"
+                              className="text-green-500 hover:text-green-700 bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/40 p-2 rounded-lg transition-colors">
+                              <ShieldCheck className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <button onClick={() => banUser(userItem.id)} title="ระงับสิทธิ์การคอมเมนต์ 3 วัน"
+                              className="text-orange-500 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/40 p-2 rounded-lg transition-colors">
+                              <ShieldAlert className="w-4 h-4" />
+                            </button>
+                          )}
                           <button onClick={() => deleteUser(userItem.id)} title="ลบผู้ใช้นี้ทิ้งถาวร"
                             className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 p-2 rounded-lg transition-colors">
                             <Trash2 className="w-4 h-4" />
