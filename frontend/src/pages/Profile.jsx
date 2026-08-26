@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, MessageCircle, Edit2, Image as ImageIcon, Check, X, ShieldAlert } from 'lucide-react';
+import { Heart, MessageCircle, Edit2, Image as ImageIcon, Check, X, ShieldAlert, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FastAverageColor } from 'fast-average-color';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useBookmarks } from '../context/BookmarkContext';
 
 function Profile() {
   const { username } = useParams();
   const { user, getToken, updateUser } = useAuth();
   const { addToast } = useToast();
+  const { bookmarkedPosts, bookmarkedCombos, togglePostBookmark, isPostBookmarked, toggleComboBookmark, isComboBookmarked } = useBookmarks();
   
+  const [activeTab, setActiveTab] = useState('posts');
   const [profileData, setProfileData] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -258,14 +261,40 @@ function Profile() {
         </div>
       </motion.div>
 
-      {/* User Posts Feed */}
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white px-2">โพสต์ของ {profileData.username}</h2>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 dark:border-gray-800">
+        <button
+          onClick={() => setActiveTab('posts')}
+          className={`flex-1 py-4 text-center font-bold text-sm transition-colors border-b-2 ${activeTab === 'posts' ? 'border-wongnai-orange text-wongnai-orange' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+        >
+          โพสต์ของฉัน
+        </button>
+        {isOwner && (
+          <>
+            <button
+              onClick={() => setActiveTab('saved_posts')}
+              className={`flex-1 py-4 text-center font-bold text-sm transition-colors border-b-2 ${activeTab === 'saved_posts' ? 'border-wongnai-orange text-wongnai-orange' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+            >
+              โพสต์ที่บันทึก
+            </button>
+            <button
+              onClick={() => setActiveTab('saved_combos')}
+              className={`flex-1 py-4 text-center font-bold text-sm transition-colors border-b-2 ${activeTab === 'saved_combos' ? 'border-wongnai-orange text-wongnai-orange' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+            >
+              คอมโบที่บันทึก
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Tab Content */}
       <div className="space-y-6">
-        {posts.length === 0 ? (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-800">
-            ยังไม่มีโพสต์
-          </div>
-        ) : (
+        {activeTab === 'posts' && (
+          posts.length === 0 ? (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-800">
+              ยังไม่มีโพสต์
+            </div>
+          ) : (
           posts.map((post, index) => (
             <motion.div 
               key={post.id}
@@ -313,6 +342,119 @@ function Profile() {
               </div>
             </motion.div>
           ))
+        )}
+
+        {activeTab === 'saved_posts' && (
+          bookmarkedPosts.length === 0 ? (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-800">
+              ยังไม่มีโพสต์ที่บันทึกไว้
+            </div>
+          ) : (
+            bookmarkedPosts.map((post, index) => (
+              <motion.div 
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden"
+              >
+                <div className="p-4 flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange flex items-center justify-center font-bold text-lg overflow-hidden">
+                     {post.authorImage ? (
+                      <img src={post.authorImage} alt={post.author} className="w-full h-full object-cover" />
+                    ) : (
+                      post.author?.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 dark:text-white">{post.author}</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(post.createdAt).toLocaleDateString('th-TH')}</p>
+                  </div>
+                </div>
+                
+                <div className="px-4 pb-3">
+                  <h3 className="font-bold text-lg mb-1 dark:text-white">{post.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-200">{post.content}</p>
+                </div>
+                
+                <div className="w-full h-80 bg-gray-100 dark:bg-gray-800">
+                  <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+                </div>
+                
+                <div className="px-4 py-3 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">
+                  <div className="flex items-center space-x-6">
+                    <div className="flex items-center text-gray-500 group">
+                      <div className="p-2 rounded-full">
+                        <Heart className="h-5 w-5" />
+                      </div>
+                      <span className="font-medium">{post.likes}</span>
+                    </div>
+                    <div className="flex items-center text-gray-500 group">
+                      <div className="p-2 rounded-full">
+                        <MessageCircle className="h-5 w-5" />
+                      </div>
+                      <span className="font-medium">{post.comments}</span>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => togglePostBookmark(post)}
+                    className="p-2 rounded-full transition-colors group text-wongnai-orange"
+                  >
+                    <div className="bg-orange-50 dark:bg-orange-900/20 rounded-full p-1">
+                      <Bookmark className="h-5 w-5 fill-wongnai-orange" />
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          )
+        )}
+
+        {activeTab === 'saved_combos' && (
+          bookmarkedCombos.length === 0 ? (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-800">
+              ยังไม่มีคอมโบที่บันทึกไว้
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
+              {bookmarkedCombos.map((combo, index) => (
+                <motion.div 
+                  key={combo.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group cursor-pointer relative"
+                >
+                  <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-6 sm:pt-8 flex flex-col items-center justify-between h-full relative overflow-hidden shadow-md border border-white/50">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleComboBookmark(combo);
+                      }}
+                      className="absolute top-3 left-3 z-30 p-2 rounded-full transition-all shadow-sm backdrop-blur-sm border bg-wongnai-orange/20 border-wongnai-orange/30 text-wongnai-orange"
+                    >
+                      <Bookmark className="w-4 h-4 sm:w-5 sm:h-5 fill-wongnai-orange" />
+                    </button>
+                    
+                    <div className="relative mt-2 sm:mt-0 px-2 sm:px-4 mb-4">
+                      <img 
+                        src={combo.imageUrl} 
+                        alt={combo.name} 
+                        className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded-full shadow-2xl ring-4 ring-white/70 relative z-10" 
+                      />
+                    </div>
+                    
+                    <div className="text-center w-full bg-white/95 backdrop-blur-md mt-auto p-3 sm:p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)]">
+                      <h3 className="font-bold text-sm sm:text-base text-gray-900 truncate">{combo.name}</h3>
+                      <div className="flex items-center justify-center mt-1 space-x-1 text-sm sm:text-base">
+                        <span className="font-bold text-wongnai-orange">฿{combo.totalPrice || '?'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )
         )}
       </div>
 

@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, MoreHorizontal, Trash2, Edit2, ShieldAlert } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, MoreHorizontal, Trash2, Edit2, ShieldAlert, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useBookmarks } from '../context/BookmarkContext';
 
 function Home() {
   const { user, getToken } = useAuth();
   const { addToast } = useToast();
+  const { isPostBookmarked, togglePostBookmark } = useBookmarks();
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostTitle, setNewPostTitle] = useState('');
@@ -484,6 +486,14 @@ function Home() {
                   <span className="font-medium">{post.comments}</span>
                 </button>
               </div>
+              <button 
+                onClick={() => togglePostBookmark(post)}
+                className={`p-2 rounded-full transition-colors group ${isPostBookmarked(post.id) ? 'text-wongnai-orange' : 'text-gray-500 hover:text-wongnai-orange'}`}
+              >
+                <div className="group-hover:bg-orange-50 dark:group-hover:bg-orange-900/20 transition-colors rounded-full p-1">
+                  <Bookmark className={`h-5 w-5 ${isPostBookmarked(post.id) ? 'fill-wongnai-orange text-wongnai-orange' : ''}`} />
+                </div>
+              </button>
             </div>
             
             {/* Comments Section */}

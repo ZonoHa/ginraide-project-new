@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { Search, ChevronDown, CheckCircle2, Circle, X } from 'lucide-react';
+import { Search, ChevronDown, CheckCircle2, Circle, X, Bookmark } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useBookmarks } from '../context/BookmarkContext';
 
 function ComboSearch() {
+  const { isComboBookmarked, toggleComboBookmark } = useBookmarks();
   const [budget, setBudget] = useState('');
   const [searchedBudget, setSearchedBudget] = useState(null); // track what was actually searched
   const location = useLocation();
@@ -292,6 +294,21 @@ function ComboSearch() {
                 <div className="absolute top-6 right-6 text-orange-300/60 text-lg pointer-events-none animate-pulse">✨</div>
                 <div className="absolute top-24 left-4 text-yellow-400/50 text-sm pointer-events-none animate-bounce" style={{animationDuration: '3s'}}>✦</div>
 
+                {/* Bookmark Button */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleComboBookmark(combo);
+                  }}
+                  className={`absolute top-3 left-3 z-30 p-2 rounded-full transition-all shadow-sm backdrop-blur-sm border ${
+                    isComboBookmarked(combo.id) 
+                      ? 'bg-wongnai-orange/20 border-wongnai-orange/30 text-wongnai-orange' 
+                      : 'bg-white/50 border-white/60 text-gray-400 hover:text-wongnai-orange hover:bg-white'
+                  }`}
+                >
+                  <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${isComboBookmarked(combo.id) ? 'fill-wongnai-orange' : ''}`} />
+                </button>
+
                 {/* Budget Diff Badge (only shown when searching by budget) */}
                 {activeTab === 'budget' && searchedBudget && (
                   <div className={`absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-full z-20 ${
@@ -387,13 +404,28 @@ function ComboSearch() {
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl border border-gray-100 dark:border-gray-800 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-10 max-h-[90vh] flex flex-col"
           >
-            {/* Close button */}
-            <button 
-              onClick={() => setSelectedCombo(null)}
-              className="absolute top-4 right-4 p-2 bg-white/50 hover:bg-white dark:bg-black/50 dark:hover:bg-black backdrop-blur rounded-full transition-colors z-20"
-            >
-              <X className="w-6 h-6 text-gray-800 dark:text-white" />
-            </button>
+            {/* Buttons */}
+            <div className="absolute top-4 right-4 flex space-x-2 z-20">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleComboBookmark(selectedCombo);
+                }}
+                className={`p-2 backdrop-blur rounded-full transition-colors ${
+                  isComboBookmarked(selectedCombo.id) 
+                    ? 'bg-orange-100/80 hover:bg-orange-100 text-wongnai-orange' 
+                    : 'bg-white/50 hover:bg-white dark:bg-black/50 dark:hover:bg-black text-gray-800 dark:text-white'
+                }`}
+              >
+                <Bookmark className={`w-6 h-6 ${isComboBookmarked(selectedCombo.id) ? 'fill-wongnai-orange' : ''}`} />
+              </button>
+              <button 
+                onClick={() => setSelectedCombo(null)}
+                className="p-2 bg-white/50 hover:bg-white dark:bg-black/50 dark:hover:bg-black backdrop-blur rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-800 dark:text-white" />
+              </button>
+            </div>
             
             {/* Header Image */}
             <div className="w-full h-64 bg-gray-100 dark:bg-gray-800 relative">
