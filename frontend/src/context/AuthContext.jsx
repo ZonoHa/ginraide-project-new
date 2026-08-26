@@ -29,6 +29,19 @@ export function AuthProvider({ children }) {
     setUser(updated);
   };
 
+  useEffect(() => {
+    if (user && user.username) {
+      fetch(`/api/users/${user.username}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && data.profile) {
+            updateUser({ commentBanUntil: data.profile.commentBanUntil });
+          }
+        })
+        .catch(err => console.error('Failed to sync user session', err));
+    }
+  }, []); // Run once on mount
+
   const getToken = () => localStorage.getItem('ginraide_token');
 
   return (

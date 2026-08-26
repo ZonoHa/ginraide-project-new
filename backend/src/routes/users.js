@@ -31,6 +31,7 @@ router.get('/:username', async (req, res) => {
         bio: true,
         profileImageUrl: true,
         createdAt: true,
+        commentBanUntil: true,
         posts: {
           include: {
             author: { select: { username: true } },
@@ -66,7 +67,8 @@ router.get('/:username', async (req, res) => {
         role: user.role,
         bio: user.bio,
         profileImageUrl: user.profileImageUrl,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        commentBanUntil: user.commentBanUntil
       },
       posts: formattedPosts
     });
