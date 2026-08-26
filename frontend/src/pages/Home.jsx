@@ -494,7 +494,7 @@ function Home() {
                 className="border-t border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 px-4 py-4 space-y-4"
               >
                 {/* List Comments */}
-                <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide pr-2">
                   {comments[post.id]?.map((comment, i) => (
                     <div key={comment.id} className="flex space-x-2">
                       <Link to={`/profile/${comment.author.username}`} className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange flex items-center justify-center font-bold text-sm flex-shrink-0 overflow-hidden hover:ring-2 hover:ring-wongnai-orange transition-all">
