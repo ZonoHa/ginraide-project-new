@@ -332,12 +332,7 @@ function FridgeIngredientFormModal({ ingredient, ingredients, onClose, onSave })
             <option>อื่นๆ</option>
           </select>
         </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL รูปภาพ</label>
-          <input value={form.imageUrl || ''} onChange={e => setForm({...form, imageUrl: e.target.value})}
-            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
-            placeholder="https://..." />
-        </div>
+
         <div className="flex space-x-3 pt-2">
           <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium">ยกเลิก</button>
           <button type="submit" disabled={isDuplicate} className={`flex-1 px-4 py-2.5 rounded-xl text-white font-medium transition-all shadow-md ${isDuplicate ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed shadow-none' : 'bg-wongnai-orange hover:bg-orange-600 shadow-orange-500/30'}`}>บันทึก</button>
