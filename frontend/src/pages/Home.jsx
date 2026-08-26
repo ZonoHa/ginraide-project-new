@@ -27,6 +27,9 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(10);
 
+  const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+
   const fetchPosts = () => {
     setIsLoading(true);
     const headers = {};
@@ -75,7 +78,9 @@ function Home() {
       addToast('กรุณากรอกหัวข้อและเนื้อหา', 'error');
       return;
     }
+    if (isSubmittingPost) return;
     
+    setIsSubmittingPost(true);
     fetch('/api/posts', {
       method: 'POST',
       headers: { 
@@ -103,7 +108,8 @@ function Home() {
         fetchPosts(); // Refresh feed
         addToast('โพสต์สำเร็จแล้ว', 'success');
       })
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => setIsSubmittingPost(false));
   };
 
   const handleLike = (postId) => {
@@ -145,8 +151,11 @@ function Home() {
   };
 
   const handleAddComment = (postId) => {
-    if (!user) return alert('กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น');
+    if (!user) return addToast('กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น', 'error');
     if (!newCommentText.trim()) return;
+    if (isSubmittingComment) return;
+    
+    setIsSubmittingComment(true);
 
     fetch(`/api/posts/${postId}/comments`, {
       method: 'POST',
@@ -171,7 +180,8 @@ function Home() {
           return post;
         }));
       })
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => setIsSubmittingComment(false));
   };
 
   const handleFileChange = async (e) => {
@@ -191,11 +201,11 @@ function Home() {
       if (res.ok) {
         setSelectedImage(data.imageUrl);
       } else {
-        alert(data.message || 'Upload failed');
+        addToast(data.message || 'Upload failed', 'error');
       }
     } catch (err) {
       console.error('Error uploading image:', err);
-      alert('Error uploading image');
+      addToast('Error uploading image', 'error');
     } finally {
       setIsUploading(false);
     }
