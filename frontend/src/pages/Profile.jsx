@@ -502,19 +502,36 @@ function Profile() {
                   </div>
                 </div>
 
+                {/* Ingredients Breakdown */}
+                {selectedCombo.ingredients && selectedCombo.ingredients.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3">วัตถุดิบที่ใช้</h3>
+                    <ul className="space-y-2">
+                      {selectedCombo.ingredients.map((i, idx) => {
+                        const name = i.product?.name || i.ingredient?.name;
+                        const price = i.product?.price;
+                        return (
+                          <li key={idx} className="flex justify-between text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-lg text-sm">
+                            <span>{name}</span>
+                            {price !== undefined && <span className="font-medium">฿{price}</span>}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Instructions */}
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3">คำอธิบายและส่วนผสม</h3>
-                  <div className="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/20">
-                    {selectedCombo.description ? (
+                {selectedCombo.description && (
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3">คำอธิบายและวิธีทำ</h3>
+                    <div className="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/20">
                       <div className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-line font-medium">
                         {selectedCombo.description}
                       </div>
-                    ) : (
-                      <p className="text-gray-500 italic">ไม่มีคำอธิบายหรือขั้นตอนการทำสำหรับเมนูนี้</p>
-                    )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </motion.div>
           </div>
