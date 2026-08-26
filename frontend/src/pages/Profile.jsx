@@ -342,6 +342,7 @@ function Profile() {
               </div>
             </motion.div>
           ))
+          )
         )}
 
         {activeTab === 'saved_posts' && (
