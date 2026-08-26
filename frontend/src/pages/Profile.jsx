@@ -14,6 +14,7 @@ function Profile() {
   const { bookmarkedPosts, bookmarkedCombos, togglePostBookmark, isPostBookmarked, toggleComboBookmark, isComboBookmarked } = useBookmarks();
   
   const [activeTab, setActiveTab] = useState('posts');
+  const [selectedCombo, setSelectedCombo] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -421,9 +422,11 @@ function Profile() {
               {bookmarkedCombos.map((combo, index) => (
                 <motion.div 
                   key={combo.id}
+                  onClick={() => setSelectedCombo(combo)}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
                   className="group cursor-pointer relative"
                 >
                   <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl pt-6 sm:pt-8 flex flex-col items-center justify-between h-full relative overflow-hidden shadow-md border border-white/50">
@@ -458,6 +461,65 @@ function Profile() {
           )
         )}
       </div>
+
+      {/* Combo Details Modal */}
+      <AnimatePresence>
+        {selectedCombo && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedCombo(null)} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            >
+              {/* Close Button */}
+              <div className="absolute top-4 right-4 z-20 flex space-x-2">
+                <button 
+                  onClick={() => setSelectedCombo(null)}
+                  className="p-2 bg-white/50 hover:bg-white dark:bg-black/50 dark:hover:bg-black backdrop-blur rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6 text-gray-800 dark:text-white" />
+                </button>
+              </div>
+              
+              {/* Header Image */}
+              <div className="w-full h-64 bg-gray-100 dark:bg-gray-800 relative flex-shrink-0">
+                <img 
+                  src={selectedCombo.imageUrl} 
+                  alt={selectedCombo.name} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
+                {/* Title & Price/Info */}
+                <div className="flex justify-between items-start">
+                  <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">{selectedCombo.name}</h2>
+                  <div className="text-right flex-shrink-0 ml-4">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 block">ราคารวม</span>
+                    <span className="text-2xl font-black text-wongnai-orange">฿{selectedCombo.totalPrice}</span>
+                  </div>
+                </div>
+
+                {/* Instructions */}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3">คำอธิบายและส่วนผสม</h3>
+                  <div className="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/20">
+                    {selectedCombo.description ? (
+                      <div className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-line font-medium">
+                        {selectedCombo.description}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 italic">ไม่มีคำอธิบายหรือขั้นตอนการทำสำหรับเมนูนี้</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
