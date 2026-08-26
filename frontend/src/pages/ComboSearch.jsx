@@ -156,8 +156,14 @@ function ComboSearch() {
               </div>
               <input 
                 type="number" 
+                min="0"
                 value={budget}
-                onChange={(e) => setBudget(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '' || Number(val) >= 0) {
+                    setBudget(val);
+                  }
+                }}
                 placeholder="งบประมาณของคุณ (เช่น 50)" 
                 className="w-full pl-10 pr-4 py-4 rounded-2xl bg-white/90 dark:bg-gray-900/90 border-2 border-transparent focus:border-wongnai-orange focus:ring-4 focus:ring-orange-500/20 transition-all outline-none text-xl font-bold text-gray-900 dark:text-white shadow-inner"
               />
