@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { Search, ChevronDown, CheckCircle2, Circle, X } from 'lucide-react';
@@ -19,6 +19,12 @@ function ComboSearch() {
   const [ingredientSearch, setIngredientSearch] = useState('');
   const [selectedCombo, setSelectedCombo] = useState(null);
   const [showAll, setShowAll] = useState(false);
+
+  const filteredIngredients = useMemo(() => {
+    return ingredientSearch 
+      ? fridgeIngredients.filter(p => p.name.toLowerCase().includes(ingredientSearch.toLowerCase()))
+      : fridgeIngredients.slice(0, 12);
+  }, [fridgeIngredients, ingredientSearch]);
 
   // Fetch combos and fridge data on mount
   useEffect(() => {
@@ -190,10 +196,7 @@ function ComboSearch() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8 max-w-5xl mx-auto">
-              {(ingredientSearch 
-                ? fridgeIngredients.filter(p => p.name.toLowerCase().includes(ingredientSearch.toLowerCase()))
-                : fridgeIngredients.slice(0, 12)
-              ).map(product => (
+              {filteredIngredients.map(product => (
                 <button
                   key={product.id}
                   onClick={() => toggleIngredient(product.id)}
@@ -212,7 +215,7 @@ function ComboSearch() {
                 </button>
               ))}
               {fridgeIngredients.length === 0 && <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">กำลังโหลดวัตถุดิบ...</p>}
-              {fridgeIngredients.length > 0 && ingredientSearch && fridgeIngredients.filter(p => p.name.toLowerCase().includes(ingredientSearch.toLowerCase())).length === 0 && (
+              {fridgeIngredients.length > 0 && ingredientSearch && filteredIngredients.length === 0 && (
                 <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">ไม่พบวัตถุดิบ "{ingredientSearch}"</p>
               )}
             </div>
