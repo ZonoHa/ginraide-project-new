@@ -451,7 +451,11 @@ function Profile() {
                     <div className="text-center w-full bg-white/95 backdrop-blur-md mt-auto p-3 sm:p-4 border-t border-white/80 shadow-[0_-15px_30px_rgba(0,0,0,0.04)]">
                       <h3 className="font-bold text-sm sm:text-base text-gray-900 truncate">{combo.name}</h3>
                       <div className="flex items-center justify-center mt-1 space-x-1 text-sm sm:text-base">
-                        <span className="font-bold text-wongnai-orange">฿{combo.totalPrice || '?'}</span>
+                        {combo.totalPrice !== undefined && combo.totalPrice !== null ? (
+                          <span className="font-bold text-wongnai-orange">฿{combo.totalPrice}</span>
+                        ) : (
+                          <span className="font-bold text-green-500 text-xs sm:text-sm">ทำเองอร่อยชัวร์ 🍳</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -497,8 +501,17 @@ function Profile() {
                 <div className="flex justify-between items-start">
                   <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">{selectedCombo.name}</h2>
                   <div className="text-right flex-shrink-0 ml-4">
-                    <span className="text-sm text-gray-500 dark:text-gray-400 block">ราคารวม</span>
-                    <span className="text-2xl font-black text-wongnai-orange">฿{selectedCombo.totalPrice}</span>
+                    {selectedCombo.totalPrice !== undefined && selectedCombo.totalPrice !== null ? (
+                      <>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 block">ราคารวม</span>
+                        <span className="text-2xl font-black text-wongnai-orange">฿{selectedCombo.totalPrice}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 block">หมวดหมู่</span>
+                        <span className="text-xl font-black text-green-500">เมนูทำเอง</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
