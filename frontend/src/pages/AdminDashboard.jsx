@@ -84,12 +84,7 @@ function ComboFormModal({ combo, onClose, onSave, products }) {
             className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
             placeholder="เช่น ข้าวไข่ตุ๋น + น้ำเต้าหู้" />
         </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">คำอธิบาย</label>
-          <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
-            className="mt-1 w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all resize-none h-20"
-            placeholder="อธิบายสั้นๆ..." />
-        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">ราคารวม (฿) *</label>
