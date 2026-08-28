@@ -37,6 +37,15 @@ export function BookmarkProvider({ children }) {
     });
   };
 
+  const updateBookmarkedPost = (postId, updateFn) => {
+    setBookmarkedPosts(prev => prev.map(p => {
+      if (p.id === postId) {
+        return updateFn(p);
+      }
+      return p;
+    }));
+  };
+
   // Actions for Combos
   const isComboBookmarked = (id) => bookmarkedCombos.some(c => c.id === id);
   const toggleComboBookmark = (combo) => {
@@ -53,6 +62,7 @@ export function BookmarkProvider({ children }) {
       bookmarkedPosts,
       isPostBookmarked,
       togglePostBookmark,
+      updateBookmarkedPost,
       bookmarkedCombos,
       isComboBookmarked,
       toggleComboBookmark

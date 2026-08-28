@@ -11,7 +11,7 @@ function Profile() {
   const { username } = useParams();
   const { user, getToken, updateUser } = useAuth();
   const { addToast } = useToast();
-  const { bookmarkedPosts, bookmarkedCombos, togglePostBookmark, isPostBookmarked, toggleComboBookmark, isComboBookmarked } = useBookmarks();
+  const { bookmarkedPosts, bookmarkedCombos, togglePostBookmark, updateBookmarkedPost, isPostBookmarked, toggleComboBookmark, isComboBookmarked } = useBookmarks();
   
   const [activeTab, setActiveTab] = useState('posts');
   const [selectedCombo, setSelectedCombo] = useState(null);
@@ -229,6 +229,35 @@ function Profile() {
     } catch (err) {
       addToast('เกิดข้อผิดพลาด', 'error');
     }
+  };
+
+  const handleLike = (postId) => {
+    if (!user) return addToast('กรุณาเข้าสู่ระบบ', 'error');
+    fetch(`/api/posts/${postId}/like`, { 
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setPosts(prevPosts => prevPosts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              likes: data.likesCount !== undefined ? data.likesCount : Math.max(0, data.liked ? post.likes + 1 : post.likes - 1),
+              isLikedByMe: data.liked
+            };
+          }
+          return post;
+        }));
+        if (isPostBookmarked(postId)) {
+          updateBookmarkedPost(postId, (post) => ({
+            ...post,
+            likes: data.likesCount !== undefined ? data.likesCount : Math.max(0, data.liked ? post.likes + 1 : post.likes - 1),
+            isLikedByMe: data.liked
+          }));
+        }
+      })
+      .catch(err => console.error(err));
   };
 
   const [expandedPostId, setExpandedPostId] = useState(null);
@@ -544,12 +573,15 @@ function Profile() {
               </div>
               
               <div className="px-4 py-3 border-t border-gray-50 dark:border-gray-800 flex items-center space-x-6">
-                <div className="flex items-center text-gray-500 group">
-                  <div className="p-2 rounded-full">
-                    <Heart className="h-5 w-5" />
+                <button 
+                  onClick={() => handleLike(post.id)}
+                  className={`flex items-center transition-colors group ${post.isLikedByMe ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+                >
+                  <div className="p-2 rounded-full group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition-colors">
+                    <Heart className={`h-5 w-5 ${post.isLikedByMe ? 'fill-red-500 text-red-500' : ''}`} />
                   </div>
                   <span className="font-medium">{post.likes}</span>
-                </div>
+                </button>
                 <button 
                   onClick={() => toggleComments(post.id)}
                   className={`flex items-center transition-colors group ${expandedPostId === post.id ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
@@ -684,12 +716,15 @@ function Profile() {
                 
                 <div className="px-4 py-3 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">
                   <div className="flex items-center space-x-6">
-                    <div className="flex items-center text-gray-500 group">
-                      <div className="p-2 rounded-full">
-                        <Heart className="h-5 w-5" />
+                    <button 
+                      onClick={() => handleLike(post.id)}
+                      className={`flex items-center transition-colors group ${post.isLikedByMe ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+                    >
+                      <div className="p-2 rounded-full group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition-colors">
+                        <Heart className={`h-5 w-5 ${post.isLikedByMe ? 'fill-red-500 text-red-500' : ''}`} />
                       </div>
                       <span className="font-medium">{post.likes}</span>
-                    </div>
+                    </button>
                     <button 
                       onClick={() => toggleComments(post.id)}
                       className={`flex items-center transition-colors group ${expandedPostId === post.id ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
