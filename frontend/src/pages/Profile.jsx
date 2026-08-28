@@ -399,18 +399,43 @@ function Profile() {
               transition={{ delay: index * 0.1 }}
               className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden"
             >
-              <div className="p-4 flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange flex items-center justify-center font-bold text-lg overflow-hidden">
-                   {profileData.profileImageUrl ? (
-                    <img src={profileData.profileImageUrl} alt={post.author} className="w-full h-full object-cover" />
-                  ) : (
-                    post.author.charAt(0).toUpperCase()
-                  )}
+              <div className="p-4 flex justify-between items-start">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange flex items-center justify-center font-bold text-lg overflow-hidden">
+                     {profileData.profileImageUrl ? (
+                      <img src={profileData.profileImageUrl} alt={post.author} className="w-full h-full object-cover" />
+                    ) : (
+                      post.author.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 dark:text-white">{post.author}</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(post.createdAt).toLocaleDateString('th-TH')}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white">{post.author}</h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(post.createdAt).toLocaleDateString('th-TH')}</p>
-                </div>
+                {isOwner && (
+                  <div className="flex space-x-1">
+                    <button 
+                      onClick={() => {
+                        setEditingPostId(post.id);
+                        setEditPostTitle(post.title);
+                        setEditPostContent(post.content);
+                        setIsEditPostModalOpen(true);
+                      }}
+                      className="p-2 text-gray-400 hover:text-wongnai-orange bg-gray-50 hover:bg-orange-50 dark:bg-gray-800 dark:hover:bg-orange-900/30 rounded-full transition-colors"
+                      title="แก้ไขโพสต์"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeletePost(post.id)}
+                      className="p-2 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/30 rounded-full transition-colors"
+                      title="ลบโพสต์"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
               
               <div className="px-4 pb-3">
