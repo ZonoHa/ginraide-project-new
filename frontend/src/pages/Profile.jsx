@@ -200,6 +200,70 @@ function Profile() {
     }
   };
 
+  const [expandedPostId, setExpandedPostId] = useState(null);
+  const [comments, setComments] = useState({});
+  const [newCommentText, setNewCommentText] = useState('');
+
+  const toggleComments = async (postId) => {
+    if (expandedPostId === postId) {
+      setExpandedPostId(null);
+    } else {
+      setExpandedPostId(postId);
+      if (!comments[postId]) {
+        try {
+          const res = await fetch(`/api/posts/${postId}/comments`);
+          const data = await res.json();
+          setComments(prev => ({ ...prev, [postId]: data }));
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+  };
+
+  const handleAddComment = async (postId) => {
+    if (!newCommentText.trim()) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}` 
+        },
+        body: JSON.stringify({ text: newCommentText })
+      });
+      if (res.ok) {
+        setNewCommentText('');
+        const commentsRes = await fetch(`/api/posts/${postId}/comments`);
+        const data = await commentsRes.json();
+        setComments(prev => ({ ...prev, [postId]: data }));
+        fetchProfile();
+      } else {
+        addToast('เกิดข้อผิดพลาด หรือคุณอาจถูกแบน', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    if (!window.confirm('ยืนยันลบคอมเมนต์นี้?')) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${getToken()}` }
+      });
+      if (res.ok) {
+        const commentsRes = await fetch(`/api/posts/${postId}/comments`);
+        const data = await commentsRes.json();
+        setComments(prev => ({ ...prev, [postId]: data }));
+        fetchProfile();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -454,13 +518,96 @@ function Profile() {
                   </div>
                   <span className="font-medium">{post.likes}</span>
                 </div>
-                <div className="flex items-center text-gray-500 group">
-                  <div className="p-2 rounded-full">
+                <button 
+                  onClick={() => toggleComments(post.id)}
+                  className={`flex items-center transition-colors group ${expandedPostId === post.id ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
+                >
+                  <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                     <MessageCircle className="h-5 w-5" />
                   </div>
                   <span className="font-medium">{post.comments}</span>
-                </div>
+                </button>
               </div>
+
+              {/* Comments Section */}
+              {expandedPostId === post.id && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="border-t border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 px-4 py-4 space-y-4"
+                >
+                  <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide pr-2">
+                    {comments[post.id]?.map((comment, i) => (
+                      <div key={comment.id} className="flex space-x-2">
+                        <Link to={`/profile/${comment.author.username}`} className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange flex items-center justify-center font-bold text-sm flex-shrink-0 overflow-hidden hover:ring-2 hover:ring-wongnai-orange transition-all">
+                          {comment.author.profileImageUrl ? (
+                            <img src={comment.author.profileImageUrl} alt={comment.author.username} crossOrigin="anonymous" className="w-full h-full object-cover" />
+                          ) : (
+                            comment.author.username.charAt(0).toUpperCase()
+                          )}
+                        </Link>
+                        <div className="flex-1 flex flex-col group">
+                          <div className="flex items-start justify-between w-full">
+                            <div className="flex-1 min-w-0">
+                              <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-700 shadow-sm inline-block max-w-full">
+                                <div className="font-bold text-sm text-gray-900 dark:text-gray-100 mb-0.5">{comment.author.username}</div>
+                                <div className="text-sm text-gray-700 dark:text-gray-300 break-words whitespace-pre-wrap">{comment.text}</div>
+                              </div>
+                              <div className="text-[11px] text-gray-400 mt-1 ml-2">
+                                {new Date(comment.createdAt).toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} น.
+                              </div>
+                            </div>
+                            
+                            {user && (user.id === post.authorId || user.role === 'ADMIN') && (
+                              <button 
+                                onClick={() => handleDeleteComment(post.id, comment.id)}
+                                className="ml-2 mt-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                                title="ลบคอมเมนต์"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {(!comments[post.id] || comments[post.id].length === 0) && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">ยังไม่มีความคิดเห็น</p>
+                    )}
+                  </div>
+                  
+                  {/* Add Comment Input */}
+                  <div className="flex space-x-2 mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                    {!post.commentsEnabled ? (
+                      <div className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-full px-4 py-2 text-sm text-center font-medium italic">
+                        เจ้าของโพสต์ปิดการแสดงความคิดเห็น
+                      </div>
+                    ) : user && user.commentBanUntil && new Date(user.commentBanUntil) > new Date() ? (
+                      <div className="flex-1 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full px-4 py-2 text-sm border border-red-200 dark:border-red-800/50 text-center font-medium">
+                        คุณถูกระงับสิทธิ์
+                      </div>
+                    ) : (
+                      <>
+                        <input 
+                          type="text" 
+                          value={newCommentText}
+                          onChange={(e) => setNewCommentText(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                          placeholder="แสดงความคิดเห็น..." 
+                          className="flex-1 bg-white dark:bg-gray-800 dark:text-white rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 border border-gray-200 dark:border-gray-700 transition-all"
+                        />
+                        <button 
+                          onClick={() => handleAddComment(post.id)}
+                          disabled={!newCommentText.trim()}
+                          className="bg-wongnai-orange text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          ส่ง
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           ))
           )
@@ -511,12 +658,15 @@ function Profile() {
                       </div>
                       <span className="font-medium">{post.likes}</span>
                     </div>
-                    <div className="flex items-center text-gray-500 group">
-                      <div className="p-2 rounded-full">
+                    <button 
+                      onClick={() => toggleComments(post.id)}
+                      className={`flex items-center transition-colors group ${expandedPostId === post.id ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
+                    >
+                      <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                         <MessageCircle className="h-5 w-5" />
                       </div>
                       <span className="font-medium">{post.comments}</span>
-                    </div>
+                    </button>
                   </div>
                   <button 
                     onClick={() => togglePostBookmark(post)}
@@ -527,6 +677,86 @@ function Profile() {
                     </div>
                   </button>
                 </div>
+
+                {/* Comments Section */}
+                {expandedPostId === post.id && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="border-t border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 px-4 py-4 space-y-4"
+                  >
+                    <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide pr-2">
+                      {comments[post.id]?.map((comment, i) => (
+                        <div key={comment.id} className="flex space-x-2">
+                          <Link to={`/profile/${comment.author.username}`} className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange flex items-center justify-center font-bold text-sm flex-shrink-0 overflow-hidden hover:ring-2 hover:ring-wongnai-orange transition-all">
+                            {comment.author.profileImageUrl ? (
+                              <img src={comment.author.profileImageUrl} alt={comment.author.username} crossOrigin="anonymous" className="w-full h-full object-cover" />
+                            ) : (
+                              comment.author.username.charAt(0).toUpperCase()
+                            )}
+                          </Link>
+                          <div className="flex-1 flex flex-col group">
+                            <div className="flex items-start justify-between w-full">
+                              <div className="flex-1 min-w-0">
+                                <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-700 shadow-sm inline-block max-w-full">
+                                  <div className="font-bold text-sm text-gray-900 dark:text-gray-100 mb-0.5">{comment.author.username}</div>
+                                  <div className="text-sm text-gray-700 dark:text-gray-300 break-words whitespace-pre-wrap">{comment.text}</div>
+                                </div>
+                                <div className="text-[11px] text-gray-400 mt-1 ml-2">
+                                  {new Date(comment.createdAt).toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} น.
+                                </div>
+                              </div>
+                              
+                              {user && (user.id === post.authorId || user.role === 'ADMIN') && (
+                                <button 
+                                  onClick={() => handleDeleteComment(post.id, comment.id)}
+                                  className="ml-2 mt-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                                  title="ลบคอมเมนต์"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(!comments[post.id] || comments[post.id].length === 0) && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">ยังไม่มีความคิดเห็น</p>
+                      )}
+                    </div>
+                    
+                    {/* Add Comment Input */}
+                    <div className="flex space-x-2 mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                      {!post.commentsEnabled ? (
+                        <div className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-full px-4 py-2 text-sm text-center font-medium italic">
+                          เจ้าของโพสต์ปิดการแสดงความคิดเห็น
+                        </div>
+                      ) : user && user.commentBanUntil && new Date(user.commentBanUntil) > new Date() ? (
+                        <div className="flex-1 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full px-4 py-2 text-sm border border-red-200 dark:border-red-800/50 text-center font-medium">
+                          คุณถูกระงับสิทธิ์
+                        </div>
+                      ) : (
+                        <>
+                          <input 
+                            type="text" 
+                            value={newCommentText}
+                            onChange={(e) => setNewCommentText(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                            placeholder="แสดงความคิดเห็น..." 
+                            className="flex-1 bg-white dark:bg-gray-800 dark:text-white rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-wongnai-orange/50 border border-gray-200 dark:border-gray-700 transition-all"
+                          />
+                          <button 
+                            onClick={() => handleAddComment(post.id)}
+                            disabled={!newCommentText.trim()}
+                            className="bg-wongnai-orange text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            ส่ง
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             ))
           )
