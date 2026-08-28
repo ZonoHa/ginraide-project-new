@@ -156,6 +156,37 @@ function Profile() {
   const [editingPostId, setEditingPostId] = useState(null);
   const [editPostTitle, setEditPostTitle] = useState('');
   const [editPostContent, setEditPostContent] = useState('');
+  const [editPostImage, setEditPostImage] = useState('');
+  const [isUploadingPostImage, setIsUploadingPostImage] = useState(false);
+  const editPostFileInputRef = useRef(null);
+
+  const handleEditPostFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+    setIsUploadingPostImage(true);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEditPostImage(data.imageUrl);
+        addToast('อัปโหลดรูปภาพสำเร็จ', 'success');
+      } else {
+        addToast('อัปโหลดรูปภาพไม่สำเร็จ', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      addToast('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ', 'error');
+    } finally {
+      setIsUploadingPostImage(false);
+    }
+  };
 
   const handleEditPostSubmit = async (e) => {
     e.preventDefault();
@@ -166,7 +197,7 @@ function Profile() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${getToken()}`
         },
-        body: JSON.stringify({ title: editPostTitle, content: editPostContent })
+        body: JSON.stringify({ title: editPostTitle, content: editPostContent, imageUrl: editPostImage })
       });
       if (res.ok) {
         addToast('อัปเดตโพสต์สำเร็จ', 'success');
@@ -484,6 +515,7 @@ function Profile() {
                         setEditingPostId(post.id);
                         setEditPostTitle(post.title);
                         setEditPostContent(post.content);
+                        setEditPostImage(post.imageUrl || '');
                         setIsEditPostModalOpen(true);
                       }}
                       className="p-2 text-gray-400 hover:text-wongnai-orange bg-gray-50 hover:bg-orange-50 dark:bg-gray-800 dark:hover:bg-orange-900/30 rounded-full transition-colors"
@@ -984,6 +1016,39 @@ function Profile() {
                 </div>
                 
                 <form onSubmit={handleEditPostSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">รูปภาพ (ถ้ามี)</label>
+                    <div className="flex items-center space-x-4">
+                      {editPostImage ? (
+                        <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                          <img src={editPostImage} alt="Preview" className="w-full h-full object-cover" />
+                          <button 
+                            type="button"
+                            onClick={() => setEditPostImage('')}
+                            className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/70"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => editPostFileInputRef.current?.click()}
+                        disabled={isUploadingPostImage}
+                        className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        {isUploadingPostImage ? 'กำลังอัปโหลด...' : (editPostImage ? 'เปลี่ยนรูปภาพ' : 'เพิ่มรูปภาพ')}
+                      </button>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        ref={editPostFileInputRef} 
+                        onChange={handleEditPostFileChange} 
+                        className="hidden" 
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">หัวข้อโพสต์</label>
                     <input 

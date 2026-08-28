@@ -180,7 +180,7 @@ exports.addComment = async (req, res) => {
 exports.updatePost = async (req, res) => {
   try {
     const postId = parseInt(req.params.id);
-    const { title, content } = req.body;
+    const { title, content, imageUrl } = req.body;
     const userId = getUserIdFromToken(req);
 
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
@@ -189,9 +189,14 @@ exports.updatePost = async (req, res) => {
     if (!post) return res.status(404).json({ message: 'Post not found' });
     if (post.authorId !== userId) return res.status(403).json({ message: 'Forbidden' });
 
+    const updateData = { title, content };
+    if (imageUrl !== undefined) {
+      updateData.imageUrl = imageUrl;
+    }
+
     const updatedPost = await prisma.post.update({
       where: { id: postId },
-      data: { title, content }
+      data: updateData
     });
     res.json(updatedPost);
   } catch (error) {
