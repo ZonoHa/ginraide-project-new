@@ -99,4 +99,45 @@ router.put('/profile', async (req, res) => {
   }
 });
 
+// PUT /api/users/change-password - Change user password
+router.put('/change-password', async (req, res) => {
+  try {
+    const userId = getUserIdFromToken(req);
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: 'Missing fields' });
+    }
+
+    // Get user with password
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Verify old password
+    const bcrypt = require('bcrypt');
+    const validPassword = await bcrypt.compare(oldPassword, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ message: 'รหัสผ่านเดิมไม่ถูกต้อง' });
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password in database
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedNewPassword }
+    });
+
+    res.json({ message: 'เปลี่ยนรหัสผ่านสำเร็จ' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

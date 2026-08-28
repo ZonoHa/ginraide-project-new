@@ -147,6 +147,45 @@ function Profile() {
     }
   };
 
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      addToast('รหัสผ่านใหม่ไม่ตรงกัน', 'error');
+      return;
+    }
+    if (newPassword.length < 6) {
+      addToast('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร', 'error');
+      return;
+    }
+    try {
+      const res = await fetch('/api/users/change-password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ oldPassword, newPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast(data.message, 'success');
+        setIsPasswordModalOpen(false);
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        addToast(data.message, 'error');
+      }
+    } catch (err) {
+      addToast('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน', 'error');
+    }
+  };
+
   if (loading) return <div className="text-center py-20 text-gray-500">กำลังโหลด...</div>;
   if (error) return <div className="text-center py-20 text-red-500 font-bold text-xl">{error}</div>;
   if (!profileData) return null;
@@ -204,13 +243,21 @@ function Profile() {
             </div>
             
             {isOwner && !isEditing && (
-              <button 
-                onClick={() => setIsEditing(true)}
-                className="mb-2 flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-sm"
-              >
-                <Edit2 className="w-4 h-4 mr-2" />
-                แก้ไขโปรไฟล์
-              </button>
+              <div className="mb-2 flex space-x-2">
+                <button 
+                  onClick={() => setIsPasswordModalOpen(true)}
+                  className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-sm"
+                >
+                  เปลี่ยนรหัสผ่าน
+                </button>
+                <button 
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-sm"
+                >
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  แก้ไขโปรไฟล์
+                </button>
+              </div>
             )}
             {isOwner && isEditing && (
               <div className="mb-2 flex space-x-2">
@@ -545,6 +592,69 @@ function Profile() {
                     </div>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Change Password Modal */}
+      <AnimatePresence>
+        {isPasswordModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPasswordModalOpen(false)} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden z-10"
+            >
+              <div className="p-6 sm:p-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">เปลี่ยนรหัสผ่าน</h2>
+                  <button onClick={() => setIsPasswordModalOpen(false)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  </button>
+                </div>
+                
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">รหัสผ่านเดิม</label>
+                    <input 
+                      type="password" 
+                      required
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label>
+                    <input 
+                      type="password" 
+                      required
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ยืนยันรหัสผ่านใหม่</label>
+                    <input 
+                      type="password" 
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full mt-6 py-3 bg-wongnai-orange text-white rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-md"
+                  >
+                    บันทึกรหัสผ่านใหม่
+                  </button>
+                </form>
               </div>
             </motion.div>
           </div>
