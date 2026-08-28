@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, MessageCircle, Edit2, Image as ImageIcon, Check, X, ShieldAlert, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Edit2, Image as ImageIcon, Check, X, ShieldAlert, Bookmark, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FastAverageColor } from 'fast-average-color';
 import { useAuth } from '../context/AuthContext';
@@ -151,6 +151,54 @@ function Profile() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [isEditPostModalOpen, setIsEditPostModalOpen] = useState(false);
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [editPostTitle, setEditPostTitle] = useState('');
+  const [editPostContent, setEditPostContent] = useState('');
+
+  const handleEditPostSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`/api/posts/${editingPostId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ title: editPostTitle, content: editPostContent })
+      });
+      if (res.ok) {
+        addToast('อัปเดตโพสต์สำเร็จ', 'success');
+        setIsEditPostModalOpen(false);
+        fetchProfile(); // Refresh posts
+      } else {
+        addToast('อัปเดตโพสต์ไม่สำเร็จ', 'error');
+      }
+    } catch (err) {
+      addToast('เกิดข้อผิดพลาด', 'error');
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('คุณต้องการลบโพสต์นี้ใช่หรือไม่?')) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`
+        }
+      });
+      if (res.ok) {
+        addToast('ลบโพสต์สำเร็จ', 'success');
+        fetchProfile();
+      } else {
+        addToast('ลบโพสต์ไม่สำเร็จ', 'error');
+      }
+    } catch (err) {
+      addToast('เกิดข้อผิดพลาด', 'error');
+    }
+  };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -653,6 +701,58 @@ function Profile() {
                     className="w-full mt-6 py-3 bg-wongnai-orange text-white rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-md"
                   >
                     บันทึกรหัสผ่านใหม่
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Post Modal */}
+      <AnimatePresence>
+        {isEditPostModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsEditPostModalOpen(false)} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden z-10"
+            >
+              <div className="p-6 sm:p-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">แก้ไขโพสต์</h2>
+                  <button onClick={() => setIsEditPostModalOpen(false)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  </button>
+                </div>
+                
+                <form onSubmit={handleEditPostSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">หัวข้อโพสต์</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={editPostTitle}
+                      onChange={(e) => setEditPostTitle(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">เนื้อหา</label>
+                    <textarea 
+                      required
+                      value={editPostContent}
+                      onChange={(e) => setEditPostContent(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-wongnai-orange/50 transition-all resize-none h-32"
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full mt-6 py-3 bg-wongnai-orange text-white rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-md"
+                  >
+                    บันทึกการแก้ไข
                   </button>
                 </form>
               </div>
