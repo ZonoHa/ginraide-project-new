@@ -54,7 +54,7 @@ function Navbar() {
             {user ? (
               <div className="flex items-center space-x-4">
                 <Link to={`/profile/${user.username}`} className="flex items-center space-x-2 text-gray-700 dark:text-gray-200 hover:text-wongnai-orange dark:hover:text-wongnai-orange transition-colors">
-                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange rounded-full flex items-center justify-center font-bold overflow-hidden">
+                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/50 text-wongnai-orange rounded-full flex-shrink-0 flex items-center justify-center font-bold overflow-hidden">
                     {user.profileImageUrl ? (
                       <img src={user.profileImageUrl} alt={user.username} crossOrigin="anonymous" className="w-full h-full object-cover" />
                     ) : (
