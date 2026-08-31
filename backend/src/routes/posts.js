@@ -11,5 +11,6 @@ router.put('/:id', postController.updatePost);
 router.put('/:id/toggle-comments', postController.toggleComments);
 router.delete('/:id/comments/:commentId', postController.deleteComment);
 router.delete('/:id', postController.deletePost);
+router.post('/bulk', postController.getPostsBulk);
 
 module.exports = router;

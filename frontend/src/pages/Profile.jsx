@@ -20,6 +20,31 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [validatedSavedPosts, setValidatedSavedPosts] = useState([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'saved_posts' && bookmarkedPosts.length > 0) {
+      setLoadingSaved(true);
+      fetch('/api/posts/bulk', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}` 
+        },
+        body: JSON.stringify({ ids: bookmarkedPosts.map(p => p.id) })
+      })
+      .then(res => res.json())
+      .then(data => {
+        setValidatedSavedPosts(data);
+        setLoadingSaved(false);
+      })
+      .catch(() => setLoadingSaved(false));
+    } else {
+      setValidatedSavedPosts([]);
+    }
+  }, [activeTab, bookmarkedPosts.length]);
+
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
   const [editBio, setEditBio] = useState('');
@@ -687,12 +712,16 @@ function Profile() {
         )}
 
         {activeTab === 'saved_posts' && (
-          bookmarkedPosts.length === 0 ? (
+          loadingSaved ? (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-800 animate-pulse">
+              กำลังโหลดโพสต์ที่บันทึกไว้...
+            </div>
+          ) : validatedSavedPosts.length === 0 ? (
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-800">
-              ยังไม่มีโพสต์ที่บันทึกไว้
+              ยังไม่มีโพสต์ที่บันทึกไว้ หรือโพสต์ถูกซ่อน
             </div>
           ) : (
-            bookmarkedPosts.map((post, index) => (
+            validatedSavedPosts.map((post, index) => (
               <motion.div 
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}

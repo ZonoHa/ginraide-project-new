@@ -20,6 +20,14 @@ exports.getPosts = async (req, res) => {
   try {
     const userId = getUserIdFromToken(req);
     const posts = await prisma.post.findMany({
+      where: {
+        author: {
+          OR: [
+            { commentBanUntil: null },
+            { commentBanUntil: { lt: new Date() } }
+          ]
+        }
+      },
       include: {
         author: {
           select: { id: true, username: true, profileImageUrl: true }
@@ -290,6 +298,55 @@ exports.deletePost = async (req, res) => {
 
     await prisma.post.delete({ where: { id: postId } });
     res.json({ message: 'Post deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getPostsBulk = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    const userId = getUserIdFromToken(req);
+    if (!ids || !Array.isArray(ids) || ids.length === 0) return res.json([]);
+
+    const posts = await prisma.post.findMany({
+      where: {
+        id: { in: ids },
+        author: {
+          OR: [
+            { commentBanUntil: null },
+            { commentBanUntil: { lt: new Date() } }
+          ]
+        }
+      },
+      include: {
+        author: { select: { id: true, username: true, profileImageUrl: true } },
+        combo: true,
+        _count: { select: { comments: true } },
+        ...(userId ? { likes: { where: { userId } } } : {})
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const formattedPosts = posts.map(post => ({
+      id: post.id,
+      authorId: post.author.id,
+      author: post.author.username,
+      authorImage: post.author.profileImageUrl,
+      title: post.title,
+      content: post.content,
+      imageUrl: post.imageUrl || post.combo?.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      commentsEnabled: post.commentsEnabled,
+      likes: post.likesCount,
+      comments: post._count.comments,
+      createdAt: post.createdAt,
+      comboId: post.comboId,
+      combo: post.combo,
+      isLikedByMe: userId && post.likes ? post.likes.length > 0 : false
+    }));
+
+    res.json(formattedPosts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

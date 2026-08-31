@@ -47,8 +47,13 @@ router.get('/:username', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    const requestUserId = getUserIdFromToken(req);
+    const requestUser = requestUserId ? await prisma.user.findUnique({ where: { id: requestUserId } }) : null;
+    const isOwnerOrAdmin = requestUser && (requestUser.id === user.id || requestUser.role === 'ADMIN');
+    const isBanned = user.commentBanUntil && new Date(user.commentBanUntil) > new Date();
+
     // Format posts to match feed structure
-    const formattedPosts = user.posts.map(post => ({
+    const formattedPosts = isBanned && !isOwnerOrAdmin ? [] : user.posts.map(post => ({
       id: post.id,
       author: post.author.username,
       title: post.title,
