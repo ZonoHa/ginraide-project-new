@@ -67,6 +67,11 @@ exports.createPost = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user && user.commentBanUntil && new Date(user.commentBanUntil) > new Date()) {
+      return res.status(403).json({ message: 'คุณถูกระงับการใช้งานชั่วคราว ไม่สามารถโพสต์ได้' });
+    }
+
     const post = await prisma.post.create({
       data: {
         title,
@@ -91,6 +96,11 @@ exports.likePost = async (req, res) => {
     const userId = getUserIdFromToken(req);
 
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user && user.commentBanUntil && new Date(user.commentBanUntil) > new Date()) {
+      return res.status(403).json({ message: 'คุณถูกระงับการใช้งานชั่วคราว ไม่สามารถกดถูกใจได้' });
+    }
 
     const existingLike = await prisma.like.findUnique({
       where: {
@@ -184,6 +194,11 @@ exports.updatePost = async (req, res) => {
     const userId = getUserIdFromToken(req);
 
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user && user.commentBanUntil && new Date(user.commentBanUntil) > new Date()) {
+      return res.status(403).json({ message: 'คุณถูกระงับการใช้งานชั่วคราว ไม่สามารถแก้ไขโพสต์ได้' });
+    }
 
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post) return res.status(404).json({ message: 'Post not found' });

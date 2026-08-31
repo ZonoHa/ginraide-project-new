@@ -204,7 +204,8 @@ function Profile() {
         setIsEditPostModalOpen(false);
         fetchProfile(); // Refresh posts
       } else {
-        addToast('อัปเดตโพสต์ไม่สำเร็จ', 'error');
+        const errData = await res.json().catch(() => ({}));
+        addToast(errData.message || 'อัปเดตโพสต์ไม่สำเร็จ', 'error');
       }
     } catch (err) {
       addToast('เกิดข้อผิดพลาด', 'error');
@@ -237,7 +238,14 @@ function Profile() {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${getToken()}` }
     })
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          addToast(errData.message || 'เกิดข้อผิดพลาดในการถูกใจ', 'error');
+          throw new Error(errData.message || 'Error');
+        }
+        return res.json();
+      })
       .then(data => {
         setPosts(prevPosts => prevPosts.map(post => {
           if (post.id === postId) {
@@ -299,7 +307,8 @@ function Profile() {
         setComments(prev => ({ ...prev, [postId]: data }));
         fetchProfile();
       } else {
-        addToast('เกิดข้อผิดพลาด หรือคุณอาจถูกแบน', 'error');
+        const errData = await res.json().catch(() => ({}));
+        addToast(errData.message || 'เกิดข้อผิดพลาดในการคอมเมนต์', 'error');
       }
     } catch (err) {
       console.error(err);

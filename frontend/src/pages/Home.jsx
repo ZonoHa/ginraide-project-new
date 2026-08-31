@@ -120,7 +120,14 @@ function Home() {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${getToken()}` }
     })
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          addToast(errData.message || 'เกิดข้อผิดพลาดในการถูกใจ', 'error');
+          throw new Error(errData.message || 'Error');
+        }
+        return res.json();
+      })
       .then(data => {
         // Optimistic update
         setPosts(posts.map(post => {
@@ -153,7 +160,7 @@ function Home() {
   };
 
   const handleAddComment = (postId) => {
-    if (!user) return addToast('กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น', 'error');
+    if (!user) return addToast('กรุณาเข้าสู่ระบบก่อนพิมพ์คอมเมนต์', 'error');
     if (!newCommentText.trim()) return;
     if (isSubmittingComment) return;
     
@@ -167,7 +174,14 @@ function Home() {
       },
       body: JSON.stringify({ text: newCommentText })
     })
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          addToast(errData.message || 'เกิดข้อผิดพลาดในการคอมเมนต์', 'error');
+          throw new Error(errData.message || 'Error');
+        }
+        return res.json();
+      })
       .then(newComment => {
         setComments(prev => ({
           ...prev,
